@@ -1,0 +1,4 @@
+*.bak
+/startDOD/bin/*
+/startDOD/obj/*
+#/startDOD/lib/*
