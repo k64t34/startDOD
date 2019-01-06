@@ -18,6 +18,7 @@ namespace startDOD
 		private System.Windows.Forms.TextBox textBox_Console;		
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button button_install2;
+		private System.Windows.Forms.Timer timer1;
 		
 		
 		/// <summary>
@@ -41,10 +42,12 @@ namespace startDOD
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.button1 = new System.Windows.Forms.Button();
 			this.textBox_Console = new System.Windows.Forms.TextBox();
 			this.button2 = new System.Windows.Forms.Button();
 			this.button_install2 = new System.Windows.Forms.Button();
+			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
 			// 
 			// button1
@@ -69,7 +72,7 @@ namespace startDOD
 			this.textBox_Console.Multiline = true;
 			this.textBox_Console.Name = "textBox_Console";
 			this.textBox_Console.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textBox_Console.Size = new System.Drawing.Size(650, 395);
+			this.textBox_Console.Size = new System.Drawing.Size(1145, 395);
 			this.textBox_Console.TabIndex = 1;
 			// 
 			// button2
@@ -96,13 +99,18 @@ namespace startDOD
 			this.button_install2.UseVisualStyleBackColor = false;
 			this.button_install2.Click += new System.EventHandler(this.button_installClick);
 			// 
+			// timer1
+			// 
+			this.timer1.Interval = 1000;
+			this.timer1.Tick += new System.EventHandler(this.Timer1Tick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.Gray;
 			this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.ClientSize = new System.Drawing.Size(805, 467);
+			this.ClientSize = new System.Drawing.Size(1288, 467);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.textBox_Console);
 			this.Controls.Add(this.button_install2);

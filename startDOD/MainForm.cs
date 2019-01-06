@@ -68,14 +68,26 @@ namespace startDOD
 			cmd.StartInfo.RedirectStandardOutput = true;
 			cmd.StartInfo.RedirectStandardError = true;
 			cmd.StartInfo.CreateNoWindow = true;
+			cmd.StartInfo.UseShellExecute=false;	//https://msdn.microsoft.com/ru-ru/library/system.diagnostics.processstartinfo.workingdirectory(v=vs.110).aspx			
 			//cmd.StartInfo.WorkingDirectory=srcds_folder;			
 			//"C:\Program Files\7-Zip\7z.exe" a -bb1 -uz2 E:\tmp\test-startDOD "D:\Program Files (x86)\Steam\steamapps\common\Day of Defeat Source\dod"
-			cmd.StartInfo.FileName = @"C:\Program Files\7-Zip\7z.exe";			
-			cmd.StartInfo.UseShellExecute=false;	//https://msdn.microsoft.com/ru-ru/library/system.diagnostics.processstartinfo.workingdirectory(v=vs.110).aspx			
+			
+			cmd.StartInfo.FileName = @"C:\Program Files\7-Zip\7z.exe";
 			cmd.StartInfo.Arguments=@"a -bb1 -uz2 E:\tmp\test-startDOD";
 			cmd.StartInfo.Arguments+=@" ""D:\Program Files (x86)\Steam\steamapps\common\Day of Defeat Source\dod""";
-			cmd.StartInfo.Arguments+=@" 2>&1";
+			//cmd.StartInfo.Arguments+=@" 2>&1";
 			//cmd.StartInfo.Arguments+=@"\materials""";
+			
+			cmd.StartInfo.FileName = @"ping.exe";
+			cmd.StartInfo.Arguments=@"-n 100 8.8.8.8";
+			
+			cmd.StartInfo.FileName = @"C:\Program Files\WinRAR\Rar.exe";
+			cmd.StartInfo.Arguments=@"a E:\tmp\test-startDOD";
+			cmd.StartInfo.Arguments+=@" ""D:\Program Files (x86)\Steam\steamapps\common\Day of Defeat Source\dod""";
+			
+			 
+			
+			
 			cmd.StartInfo.UseShellExecute = false;
 			cmd.OutputDataReceived += new DataReceivedEventHandler(OutputHandler);
 			cmd.ErrorDataReceived  += new DataReceivedEventHandler(OutputHandler);
@@ -85,6 +97,7 @@ namespace startDOD
 			AppendText= new delegateAppendText(this.textBox_Console.AppendText);
 			thread.Start();			
 			textBox_Console.AppendText("Finish method\r\n");
+			//timer1.Start();
 			
 		}
 		 private  void RunCMD()
@@ -94,23 +107,25 @@ namespace startDOD
 		 	//origin  this.Invoke(AppendText, new object[] { "sadf" });
 		 	this.Invoke(AppendText,"Start cmd\r\n");		 	
 		 	cmd.Start();
-		 	cmd.BeginOutputReadLine();			
+		 	cmd.BeginOutputReadLine();	
+			cmd.BeginErrorReadLine();		 	
 			cmd.WaitForExit();
 			this.Invoke(AppendText,"finish cmd\r\n");
 			
 			
-			//cmd.StartInfo.RedirectStandardOutput = false;			
 			//this.button_install.Enabled=true;
 			//cmd.Dispose();
 			cmd=null;
+			//timer1.Stop();
 		}
-		private  async void OutputHandler(object sendingProcess, 
+		  void OutputHandler(object sendingProcess, 
             DataReceivedEventArgs outLine)
         {
             numOutputLines++;
+            //this.Invoke(AppendText,Environment.NewLine +numOutputLines.ToString());
 		 	// Collect the sort command output.
 		 	//String result;
-		 	//result = await cmd.StandardOutput.ReadLineAsync();
+		 	//result = await cmd.StandardOutput.ReadLineAsync();		 	
             if (!String.IsNullOrEmpty(outLine.Data))
             	{
             	//StringBuilder sortOutput = new StringBuilder("");
@@ -126,7 +141,16 @@ namespace startDOD
 		void Button2Click(object sender, EventArgs e)
 		{
 			this.textBox_Console.AppendText(numOutputLines.ToString());
-			//this.textBox_Console.Refresh();
+			this.textBox_Console.Refresh();
+		}
+		void Timer1Tick(object sender, EventArgs e)
+		{
+			if (cmd.StandardOutput!=null)
+			{
+			String result;
+		 	result = this.cmd.StandardOutput.ToString();
+			this.textBox_Console.AppendText(result);
+			}
 		} 
 	}
 }
