@@ -11,7 +11,7 @@ using System;
 //using System.Drawing;
 using System.Windows.Forms;
 using System.Diagnostics;
-//using System.IO;
+using System.IO;
 //using System.Net;
 using System.Threading;
 //using System.Reflection;
@@ -30,6 +30,7 @@ namespace startDOD
 		delegate  void delegateAppendText (string text);
 		delegateAppendText AppendText;
 		int numOutputLines=0;
+		string textBox_TargetFolderParent;
 		public MainForm()
 		{			
 		
@@ -151,6 +152,25 @@ namespace startDOD
 		 	result = this.cmd.StandardOutput.ToString();
 			this.textBox_Console.AppendText(result);
 			}
-		} 
+		}
+		void MainFormLoad(object sender, EventArgs e)
+		{
+			textBox_TargetFolderParent=radioButton_Disk_C.Text+"\\";
+			textBox_TargetFolder.Text=textBox_TargetFolderParent;
+			string[] fileArray = Directory.GetDirectories(textBox_TargetFolderParent);
+           for (int i = 0; i < fileArray.Length; i++)
+           {
+           	//listBox_Folders.Items.Add(fileArray[i]+Environment.NewLine);
+           	listBox_Folders.Items.Add(fileArray[i]);
+           	
+            	
+           }
+			
+			
+		}
+		void ListBox_FoldersDoubleClick(object sender, EventArgs e)
+		{
+			textBox_TargetFolder.Text=textBox_TargetFolderParent+listBox_Folders.SelectedItem;
+		}
 	}
 }
