@@ -1,4 +1,6 @@
 *.bak
 /startDOD/bin/*
 /startDOD/obj/*
+/InstallDOD/bin/* 
+/InstallDOD/obj/* 
 #/startDOD/lib/*

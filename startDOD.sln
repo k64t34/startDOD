@@ -6,6 +6,8 @@ VisualStudioVersion = 12.0.20827.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "startDOD", "startDOD\startDOD.csproj", "{14886D68-7B96-4923-A78F-07718C6B08EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstallDOD", "InstallDOD\InstallDOD.csproj", "{FA4E4D7D-FC04-4CBE-8FDD-79B7C07CC179}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,5 +18,9 @@ Global
 		{14886D68-7B96-4923-A78F-07718C6B08EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14886D68-7B96-4923-A78F-07718C6B08EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14886D68-7B96-4923-A78F-07718C6B08EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA4E4D7D-FC04-4CBE-8FDD-79B7C07CC179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA4E4D7D-FC04-4CBE-8FDD-79B7C07CC179}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA4E4D7D-FC04-4CBE-8FDD-79B7C07CC179}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA4E4D7D-FC04-4CBE-8FDD-79B7C07CC179}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
