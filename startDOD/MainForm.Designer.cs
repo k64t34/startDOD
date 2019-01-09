@@ -26,9 +26,8 @@ namespace startDOD
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Panel panel_Console;
 		private System.Windows.Forms.Label label_Console_Title;
-		private System.Windows.Forms.TextBox textBox_cmd;
 		private System.Windows.Forms.Button button_cmd;
-		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label label_Console_cmd;
 		
 		
 		/// <summary>
@@ -63,10 +62,9 @@ namespace startDOD
 			this.label4 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.panel_Console = new System.Windows.Forms.Panel();
-			this.label_Console_Title = new System.Windows.Forms.Label();
-			this.textBox_cmd = new System.Windows.Forms.TextBox();
+			this.label_Console_cmd = new System.Windows.Forms.Label();
 			this.button_cmd = new System.Windows.Forms.Button();
-			this.label1 = new System.Windows.Forms.Label();
+			this.label_Console_Title = new System.Windows.Forms.Label();
 			this.panel_Console.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -84,9 +82,8 @@ namespace startDOD
 			this.textBox_Console.Multiline = true;
 			this.textBox_Console.Name = "textBox_Console";
 			this.textBox_Console.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textBox_Console.Size = new System.Drawing.Size(601, 331);
+			this.textBox_Console.Size = new System.Drawing.Size(603, 331);
 			this.textBox_Console.TabIndex = 8;
-			this.textBox_Console.Text = "sdfgsdgfsdg sdfg dfg sdfg sdgfsdgf gfsdgsdgf";
 			// 
 			// label_CE
 			// 
@@ -174,38 +171,29 @@ namespace startDOD
 			// 
 			this.panel_Console.AutoSize = true;
 			this.panel_Console.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-			this.panel_Console.Controls.Add(this.label1);
+			this.panel_Console.Controls.Add(this.label_Console_cmd);
 			this.panel_Console.Controls.Add(this.button_cmd);
-			this.panel_Console.Controls.Add(this.textBox_cmd);
 			this.panel_Console.Controls.Add(this.label_Console_Title);
 			this.panel_Console.Controls.Add(this.textBox_Console);
 			this.panel_Console.Location = new System.Drawing.Point(216, 38);
-			this.panel_Console.Margin = new System.Windows.Forms.Padding(1);
+			this.panel_Console.Margin = new System.Windows.Forms.Padding(20);
 			this.panel_Console.Name = "panel_Console";
 			this.panel_Console.Padding = new System.Windows.Forms.Padding(10);
-			this.panel_Console.Size = new System.Drawing.Size(631, 423);
+			this.panel_Console.Size = new System.Drawing.Size(633, 423);
 			this.panel_Console.TabIndex = 19;
 			// 
-			// label_Console_Title
+			// label_Console_cmd
 			// 
-			this.label_Console_Title.BackColor = System.Drawing.Color.Transparent;
-			this.label_Console_Title.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label_Console_Title.Location = new System.Drawing.Point(10, 10);
-			this.label_Console_Title.Margin = new System.Windows.Forms.Padding(50);
-			this.label_Console_Title.Name = "label_Console_Title";
-			this.label_Console_Title.Size = new System.Drawing.Size(611, 23);
-			this.label_Console_Title.TabIndex = 0;
-			this.label_Console_Title.Text = "Консоль";
-			// 
-			// textBox_cmd
-			// 
-			this.textBox_cmd.Location = new System.Drawing.Point(13, 377);
-			this.textBox_cmd.Name = "textBox_cmd";
-			this.textBox_cmd.Size = new System.Drawing.Size(170, 26);
-			this.textBox_cmd.TabIndex = 20;
+			this.label_Console_cmd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.label_Console_cmd.BackColor = System.Drawing.Color.DimGray;
+			this.label_Console_cmd.Location = new System.Drawing.Point(10, 382);
+			this.label_Console_cmd.Name = "label_Console_cmd";
+			this.label_Console_cmd.Size = new System.Drawing.Size(494, 23);
+			this.label_Console_cmd.TabIndex = 22;
 			// 
 			// button_cmd
 			// 
+			this.button_cmd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.button_cmd.AutoSize = true;
 			this.button_cmd.BackColor = System.Drawing.Color.Transparent;
 			this.button_cmd.Enabled = false;
@@ -218,14 +206,16 @@ namespace startDOD
 			this.button_cmd.Text = "Выполнить";
 			this.button_cmd.UseVisualStyleBackColor = false;
 			// 
-			// label1
+			// label_Console_Title
 			// 
-			this.label1.BackColor = System.Drawing.Color.DimGray;
-			this.label1.Location = new System.Drawing.Point(189, 382);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(307, 23);
-			this.label1.TabIndex = 22;
-			this.label1.Text = "label1";
+			this.label_Console_Title.BackColor = System.Drawing.Color.Transparent;
+			this.label_Console_Title.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label_Console_Title.Location = new System.Drawing.Point(10, 10);
+			this.label_Console_Title.Margin = new System.Windows.Forms.Padding(50);
+			this.label_Console_Title.Name = "label_Console_Title";
+			this.label_Console_Title.Size = new System.Drawing.Size(613, 23);
+			this.label_Console_Title.TabIndex = 0;
+			this.label_Console_Title.Text = "Консоль";
 			// 
 			// MainForm
 			// 

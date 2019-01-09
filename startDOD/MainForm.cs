@@ -17,6 +17,9 @@ using System.Threading;
 //using System.Reflection;
 using System.Text;
 using System.Drawing;
+using System.Timers;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace startDOD
 {
@@ -151,23 +154,41 @@ namespace startDOD
 		}
 		void MainFormLoad(object sender, EventArgs e)
 		{
-			panel_Console.BackColor=Color.FromArgb(200, 128, 128, 128);		
-			string iniFile=workFolder+RunMOD+".ini";
-			if (File.Exists(iniFile))
-			{		
-				Process emu = new Process();
-				emu.StartInfo.WorkingDirectory=workFolder;			
-				emu.StartInfo.FileName = emu.StartInfo.WorkingDirectory + revLoader;				
-				try 
-					{					
-				     emu.Start();
-	            	}        	
-	        	catch 
-	        		{;
-		        	}
+			panel_Console.BackColor=Color.FromArgb(200, 128, 128, 128);	
+			label_Console_cmd.BackColor=Color.FromArgb(100, 48, 48, 48);	
+			panel_Console.Width=this.Width-panel_Console.Left-panel_Console.Margin.All;
+			panel_Console.Height=this.Height-panel_Console.Top-panel_Console.Margin.All;
+			label_Console_cmd.Width=button_cmd.Left-panel_Console.Margin.All;
+			textBox_Console.Width=panel_Console.Width-panel_Console.Margin.All;
+			textBox_Console.Height=label_Console_cmd.Top-panel_Console.Margin.All-panel_Console.Margin.All;
+			
+			textBox_Console.AppendText("Рабочая папка "+workFolder+Environment.NewLine);
+			string iniFile=RunMOD+".ini";			
+			if (!File.Exists(workFolder+iniFile))textBox_Console.AppendText("Файла конфигурации "+iniFile+" не найден. Обновление невозможно."+Environment.NewLine);
+			else
+			{
+			iniFile=workFolder+iniFile;	
 			}
-		}
-		
+			
+			cmd = new Process();
+			cmd.StartInfo.WorkingDirectory=workFolder;			
+			cmd.StartInfo.FileName = cmd.StartInfo.WorkingDirectory + revLoader;				
+			textBox_Console.AppendText("Запуск "+revLoader+Environment.NewLine);
+			try 
+				{					
+			     cmd.Start();
+	           	}        	
+			catch (Exception  ex)
+	        	{
+				textBox_Console.AppendText(ex.Message.ToString()+Environment.NewLine);
+		       	}
+			#if !DEBUG
+			Thread.Sleep(5000);
+			this.Close();
+			#endif 
+			
+			
+		}		
 		
 	}
 }
