@@ -16,6 +16,7 @@ using System.IO;
 using System.Threading;
 //using System.Reflection;
 using System.Text;
+using System.Drawing;
 
 namespace startDOD
 {
@@ -31,6 +32,14 @@ namespace startDOD
 		delegateAppendText AppendText;
 		int numOutputLines=0;
 		string textBox_TargetFolderParent;
+		
+		//AppDomain.CurrentDomain.BaseDirectory;			
+		//Application.ExecutablePath;
+		//Assembly.GetExecutingAssembly().Location;
+		//Application.StartupPath;
+		string workFolder=AppDomain.CurrentDomain.BaseDirectory;
+		const string RunMOD="День Победы";
+		const string revLoader="revLoader.exe";
 		public MainForm()
 		{			
 		
@@ -43,27 +52,10 @@ namespace startDOD
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//		
 		}
-		void Button1Click(object sender, EventArgs e)
+		
+		void RunInstall()
 		{
-			this.Hide();
-			if (thread != null)
-			{
-				if (cmd !=null) //if (cmd.StartInfo.RedirectStandardOutput)//if (!cmd.HasExited)
-				{
-				try
-					{
-						cmd.Kill();
-					}
-					finally{}
-				}
-				
-				thread.Abort();
-			}
-			this.Close();
-		}
-		void button_installClick(object sender, EventArgs e)
-		{
-			button_install2.Enabled=false;
+			
 			textBox_Console.AppendText("Start thread\r\n");
 			cmd = new Process();
 			cmd.StartInfo.RedirectStandardOutput = true;
@@ -119,7 +111,7 @@ namespace startDOD
 			cmd=null;
 			//timer1.Stop();
 		}
-		  void OutputHandler(object sendingProcess, 
+		void OutputHandler(object sendingProcess, 
             DataReceivedEventArgs outLine)
         {
             numOutputLines++;
@@ -137,40 +129,45 @@ namespace startDOD
                 sortOutput.Append(Environment.NewLine + 
                     "[" + numOutputLines.ToString() + "] - " + outLine.Data);*/
             }
-        }
+        }	
 		
-		void Button2Click(object sender, EventArgs e)
+		void Label8Click(object sender, EventArgs e)
 		{
-			this.textBox_Console.AppendText(numOutputLines.ToString());
-			this.textBox_Console.Refresh();
-		}
-		void Timer1Tick(object sender, EventArgs e)
-		{
-			if (cmd.StandardOutput!=null)
+			this.Hide();
+			if (thread != null)
 			{
-			String result;
-		 	result = this.cmd.StandardOutput.ToString();
-			this.textBox_Console.AppendText(result);
+				if (cmd !=null) //if (cmd.StartInfo.RedirectStandardOutput)//if (!cmd.HasExited)
+				{
+				try
+					{
+						cmd.Kill();
+					}
+					finally{}
+				}
+				
+				thread.Abort();
 			}
+			this.Close();
 		}
 		void MainFormLoad(object sender, EventArgs e)
 		{
-			textBox_TargetFolderParent=radioButton_Disk_C.Text+"\\";
-			textBox_TargetFolder.Text=textBox_TargetFolderParent;
-			string[] fileArray = Directory.GetDirectories(textBox_TargetFolderParent);
-           for (int i = 0; i < fileArray.Length; i++)
-           {
-           	//listBox_Folders.Items.Add(fileArray[i]+Environment.NewLine);
-           	listBox_Folders.Items.Add(fileArray[i]);
-           	
-            	
-           }
-			
-			
+			panel_Console.BackColor=Color.FromArgb(200, 128, 128, 128);		
+			string iniFile=workFolder+RunMOD+".ini";
+			if (File.Exists(iniFile))
+			{		
+				Process emu = new Process();
+				emu.StartInfo.WorkingDirectory=workFolder;			
+				emu.StartInfo.FileName = emu.StartInfo.WorkingDirectory + revLoader;				
+				try 
+					{					
+				     emu.Start();
+	            	}        	
+	        	catch 
+	        		{;
+		        	}
+			}
 		}
-		void ListBox_FoldersDoubleClick(object sender, EventArgs e)
-		{
-			textBox_TargetFolder.Text=textBox_TargetFolderParent+listBox_Folders.SelectedItem;
-		}
+		
+		
 	}
 }

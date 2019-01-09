@@ -29,8 +29,10 @@ namespace InstallDOD
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label_CE;
 		private System.Windows.Forms.Label label10;
-		private System.Windows.Forms.ComboBox comboBox1;
+		private System.Windows.Forms.ComboBox comboBox_Disks;
 		private System.Windows.Forms.Button button_FolderUp;
+		private System.Windows.Forms.Button button_newFolder;
+		private System.Windows.Forms.Label label9;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -55,9 +57,11 @@ namespace InstallDOD
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.panel_Folder = new System.Windows.Forms.Panel();
+			this.label9 = new System.Windows.Forms.Label();
+			this.button_newFolder = new System.Windows.Forms.Button();
 			this.button_FolderUp = new System.Windows.Forms.Button();
 			this.label10 = new System.Windows.Forms.Label();
-			this.comboBox1 = new System.Windows.Forms.ComboBox();
+			this.comboBox_Disks = new System.Windows.Forms.ComboBox();
 			this.listBox_Folders = new System.Windows.Forms.ListBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.button_folder_Cancel = new System.Windows.Forms.Button();
@@ -78,9 +82,11 @@ namespace InstallDOD
 			// 
 			this.panel_Folder.Anchor = System.Windows.Forms.AnchorStyles.None;
 			this.panel_Folder.BackColor = System.Drawing.Color.DarkGray;
+			this.panel_Folder.Controls.Add(this.label9);
+			this.panel_Folder.Controls.Add(this.button_newFolder);
 			this.panel_Folder.Controls.Add(this.button_FolderUp);
 			this.panel_Folder.Controls.Add(this.label10);
-			this.panel_Folder.Controls.Add(this.comboBox1);
+			this.panel_Folder.Controls.Add(this.comboBox_Disks);
 			this.panel_Folder.Controls.Add(this.listBox_Folders);
 			this.panel_Folder.Controls.Add(this.label2);
 			this.panel_Folder.Controls.Add(this.button_folder_Cancel);
@@ -93,6 +99,30 @@ namespace InstallDOD
 			this.panel_Folder.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
 			this.panel_Folder.Size = new System.Drawing.Size(597, 464);
 			this.panel_Folder.TabIndex = 8;
+			// 
+			// label9
+			// 
+			this.label9.BackColor = System.Drawing.Color.Transparent;
+			this.label9.Location = new System.Drawing.Point(20, 63);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(68, 23);
+			this.label9.TabIndex = 28;
+			this.label9.Text = "Папка";
+			// 
+			// button_newFolder
+			// 
+			this.button_newFolder.AutoSize = true;
+			this.button_newFolder.BackColor = System.Drawing.Color.Transparent;
+			this.button_newFolder.BackgroundImage = global::InstallDOD.Resource1.icon_newfolder;
+			this.button_newFolder.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.button_newFolder.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.button_newFolder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.button_newFolder.Location = new System.Drawing.Point(503, 29);
+			this.button_newFolder.Name = "button_newFolder";
+			this.button_newFolder.Size = new System.Drawing.Size(24, 24);
+			this.button_newFolder.TabIndex = 26;
+			this.button_newFolder.UseVisualStyleBackColor = false;
+			this.button_newFolder.Click += new System.EventHandler(this.Button_newFolderClick);
 			// 
 			// button_FolderUp
 			// 
@@ -107,34 +137,34 @@ namespace InstallDOD
 			this.button_FolderUp.Size = new System.Drawing.Size(24, 24);
 			this.button_FolderUp.TabIndex = 25;
 			this.button_FolderUp.UseVisualStyleBackColor = false;
+			this.button_FolderUp.Click += new System.EventHandler(this.Button_FolderUpClick);
 			// 
 			// label10
 			// 
+			this.label10.BackColor = System.Drawing.Color.Transparent;
 			this.label10.Location = new System.Drawing.Point(20, 31);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(68, 23);
 			this.label10.TabIndex = 24;
-			this.label10.Text = "Искать...";
+			this.label10.Text = "Диск";
 			// 
-			// comboBox1
+			// comboBox_Disks
 			// 
-			this.comboBox1.BackColor = System.Drawing.Color.Gray;
-			this.comboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.comboBox1.ForeColor = System.Drawing.Color.White;
-			this.comboBox1.FormattingEnabled = true;
-			this.comboBox1.Items.AddRange(new object[] {
-			"C:\\",
-			"D:\\",
-			"E:\\"});
-			this.comboBox1.Location = new System.Drawing.Point(94, 28);
-			this.comboBox1.Name = "comboBox1";
-			this.comboBox1.Size = new System.Drawing.Size(376, 26);
-			this.comboBox1.TabIndex = 23;
+			this.comboBox_Disks.BackColor = System.Drawing.Color.Gray;
+			this.comboBox_Disks.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_Disks.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.comboBox_Disks.ForeColor = System.Drawing.Color.White;
+			this.comboBox_Disks.Location = new System.Drawing.Point(94, 28);
+			this.comboBox_Disks.Name = "comboBox_Disks";
+			this.comboBox_Disks.Size = new System.Drawing.Size(376, 26);
+			this.comboBox_Disks.TabIndex = 23;
+			this.comboBox_Disks.SelectedIndexChanged += new System.EventHandler(this.ComboBox_DisksSelectedIndexChanged);
 			// 
 			// listBox_Folders
 			// 
 			this.listBox_Folders.BackColor = System.Drawing.Color.Gray;
 			this.listBox_Folders.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.listBox_Folders.ForeColor = System.Drawing.Color.White;
 			this.listBox_Folders.FormattingEnabled = true;
 			this.listBox_Folders.ItemHeight = 18;
 			this.listBox_Folders.Location = new System.Drawing.Point(10, 90);
@@ -142,11 +172,14 @@ namespace InstallDOD
 			this.listBox_Folders.Name = "listBox_Folders";
 			this.listBox_Folders.ScrollAlwaysVisible = true;
 			this.listBox_Folders.Size = new System.Drawing.Size(577, 236);
-			this.listBox_Folders.TabIndex = 22;
+			this.listBox_Folders.Sorted = true;
+			this.listBox_Folders.TabIndex = 2;
+			this.listBox_Folders.SelectedIndexChanged += new System.EventHandler(this.ListBox_FoldersSelectedIndexChanged);
 			// 
 			// label2
 			// 
 			this.label2.AutoSize = true;
+			this.label2.BackColor = System.Drawing.Color.Transparent;
 			this.label2.Location = new System.Drawing.Point(38, 337);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(225, 18);
@@ -181,19 +214,24 @@ namespace InstallDOD
 			this.button_folder_OK.TabIndex = 14;
 			this.button_folder_OK.Text = "OK";
 			this.button_folder_OK.UseVisualStyleBackColor = true;
+			this.button_folder_OK.Click += new System.EventHandler(this.Button_folder_OKClick);
 			// 
 			// textBox_TargetFolder
 			// 
 			this.textBox_TargetFolder.BackColor = System.Drawing.Color.Gray;
 			this.textBox_TargetFolder.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.textBox_TargetFolder.Cursor = System.Windows.Forms.Cursors.Arrow;
+			this.textBox_TargetFolder.ForeColor = System.Drawing.Color.White;
 			this.textBox_TargetFolder.Location = new System.Drawing.Point(28, 362);
 			this.textBox_TargetFolder.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.textBox_TargetFolder.Name = "textBox_TargetFolder";
+			this.textBox_TargetFolder.ReadOnly = true;
 			this.textBox_TargetFolder.Size = new System.Drawing.Size(536, 26);
 			this.textBox_TargetFolder.TabIndex = 12;
 			// 
 			// label1
 			// 
+			this.label1.BackColor = System.Drawing.Color.Transparent;
 			this.label1.Dock = System.Windows.Forms.DockStyle.Top;
 			this.label1.ForeColor = System.Drawing.Color.White;
 			this.label1.Location = new System.Drawing.Point(10, 0);
@@ -201,6 +239,7 @@ namespace InstallDOD
 			this.label1.Size = new System.Drawing.Size(577, 25);
 			this.label1.TabIndex = 11;
 			this.label1.Text = "    Укажите место для установки";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// label3
 			// 
@@ -278,13 +317,13 @@ namespace InstallDOD
 			this.label_CE.BackColor = System.Drawing.Color.Transparent;
 			this.label_CE.Dock = System.Windows.Forms.DockStyle.Right;
 			this.label_CE.Font = new System.Drawing.Font("Calibri", 11.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.label_CE.Image = global::InstallDOD.Resource1.CE;
+			this.label_CE.ForeColor = System.Drawing.Color.Silver;
 			this.label_CE.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.label_CE.Location = new System.Drawing.Point(691, 0);
+			this.label_CE.Location = new System.Drawing.Point(682, 0);
 			this.label_CE.Name = "label_CE";
-			this.label_CE.Size = new System.Drawing.Size(181, 18);
+			this.label_CE.Size = new System.Drawing.Size(190, 18);
 			this.label_CE.TabIndex = 11;
-			this.label_CE.Text = "       Корпоративная версия";
+			this.label_CE.Text = "          Корпоративная версия";
 			// 
 			// MainForm
 			// 
@@ -305,12 +344,14 @@ namespace InstallDOD
 			this.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.ForeColor = System.Drawing.Color.White;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.Icon = global::InstallDOD.Resource1.game;
 			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "InstallDOD";
-			this.TransparencyKey = System.Drawing.Color.MediumOrchid;
+			this.TransparencyKey = System.Drawing.Color.Magenta;
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.Load += new System.EventHandler(this.MainFormLoad);
 			this.panel_Folder.ResumeLayout(false);
 			this.panel_Folder.PerformLayout();
 			this.ResumeLayout(false);

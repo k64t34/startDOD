@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace InstallDOD {
+namespace startDOD {
 	using System;
 	
 	
@@ -39,7 +39,7 @@ namespace InstallDOD {
 		internal static global::System.Resources.ResourceManager ResourceManager {
 			get {
 				if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("InstallDOD.Resource1", typeof(Resource1).Assembly);
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("startDOD.Resource1", typeof(Resource1).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;
@@ -87,36 +87,6 @@ namespace InstallDOD {
 			get {
 				object obj = ResourceManager.GetObject("game", resourceCulture);
 				return ((System.Drawing.Icon)(obj));
-			}
-		}
-		
-		/// <summary>
-		///   Looks up a localized resource of type System.Drawing.Bitmap.
-		/// </summary>
-		internal static System.Drawing.Bitmap icon_folder {
-			get {
-				object obj = ResourceManager.GetObject("icon_folder", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-		
-		/// <summary>
-		///   Looks up a localized resource of type System.Drawing.Bitmap.
-		/// </summary>
-		internal static System.Drawing.Bitmap icon_folderup {
-			get {
-				object obj = ResourceManager.GetObject("icon_folderup", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-		
-		/// <summary>
-		///   Looks up a localized resource of type System.Drawing.Bitmap.
-		/// </summary>
-		internal static System.Drawing.Bitmap icon_newfolder {
-			get {
-				object obj = ResourceManager.GetObject("icon_newfolder", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
 			}
 		}
 	}
