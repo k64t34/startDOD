@@ -1,4 +1,5 @@
 *.bak
+/.vs/* 
 /startDOD/bin/*
 /startDOD/obj/*
 /InstallDOD/bin/* 

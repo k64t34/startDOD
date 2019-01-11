@@ -7,11 +7,13 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
+//using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+//using System.Runtime.InteropServices;
+using IWshRuntimeLibrary;
 
 namespace InstallDOD
 {
@@ -21,8 +23,13 @@ namespace InstallDOD
 	
 	public partial class MainForm : Form
 	{
-		const string RunDOD="День Победы.exe";
-		public MainForm()
+		const string Mod="День Победы";
+        //AppDomain.CurrentDomain.BaseDirectory;			
+        //Application.ExecutablePath;
+        //Assembly.GetExecutingAssembly().Location;
+        //Application.StartupPath;
+        string ScriptFolder = AppDomain.CurrentDomain.BaseDirectory;
+        public MainForm()
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
@@ -132,37 +139,56 @@ namespace InstallDOD
 		}
 		void Button_folder_OKClick(object sender, EventArgs e)
 		{
-			try 
-			{
-			//AppDomain.CurrentDomain.BaseDirectory;			
-			//Application.ExecutablePath;
-			//Assembly.GetExecutingAssembly().Location;
-			//Application.StartupPath;
+            string strFile = textBox_TargetFolder.Text + Mod + ".ini";
+            
+            try
+            {
+                //Create ini file
+                System.IO.File.WriteAllText(strFile, ScriptFolder);
+                //Starter
+                strFile = textBox_TargetFolder.Text + Mod + ".exe";
+                try
+                {
+                    // Copy starter to destination folder
+                    System.IO.File.Copy(ScriptFolder + Mod + ".exe", strFile, true);
+                    try
+                    {
+                        //Ярлык на рабочем столе
+                        string desktopShortcut = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" +Mod + ".lnk";                                                 
+                        if (System.IO.File.Exists(desktopShortcut)) System.IO.File.Delete(desktopShortcut);
+                        try
+                        {
+                            WshShell shell = new WshShell();
+                            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(desktopShortcut);
+                            shortcut.Description = "Day of Defeat";
+                            shortcut.TargetPath = strFile;
+                            shortcut.WorkingDirectory = textBox_TargetFolder.Text;
+                            shortcut.Save();                        
+                            try
+                            {
+                                using (Process myProcess = new Process())
+                                {
+                                    myProcess.StartInfo.UseShellExecute = false;
+                                    myProcess.StartInfo.FileName = Mod + ".exe";
+                                    myProcess.StartInfo.WorkingDirectory = textBox_TargetFolder.Text;
+                                    myProcess.Start();
+                                    System.Threading.Thread.Sleep(3000);
+                                }
+                            }
+                            catch (Exception ex)
+                            { MessageBox.Show(ex.Message.ToString(), "Ошибка при запуске стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                        }
+                        catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при создании ярлыка стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                    }
+                    catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при обновлении ярлыка стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                }
+                catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при копировании стартера", MessageBoxButtons.OK, MessageBoxIcon.Error);  }
 
-				File.Copy(AppDomain.CurrentDomain.BaseDirectory+RunDOD, textBox_TargetFolder.Text+RunDOD, true);
-				try
-	            {
-	                using (Process myProcess = new Process())
-	                {
-	                    myProcess.StartInfo.UseShellExecute = false;	                    
-	                    myProcess.StartInfo.FileName = RunDOD;	
-	                    myProcess.StartInfo.WorkingDirectory = textBox_TargetFolder.Text;
-	                    myProcess.Start();
-	                }
-	            }
-	            catch (Exception ex)
-	            {
-	                MessageBox.Show(/*"Не удалось создать папку "+Environment.NewLine+newFolder+Environment.NewLine+*/ex.Message.ToString(),
-				                "Ошибка при запуске установщика",MessageBoxButtons.OK,MessageBoxIcon.Error);
-	            }
-			}
-			catch (Exception  ex)
-			{
-				
-				MessageBox.Show(/*"Не удалось создать папку "+Environment.NewLine+newFolder+Environment.NewLine+*/ex.Message.ToString(),
-				                "Ошибка при копировании",MessageBoxButtons.OK,MessageBoxIcon.Error);
-			}
-		this.Close();
+                
+
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при подготовке конфигурации стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }            
+            this.Close();
 		}
 		
 		
