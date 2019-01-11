@@ -1,1 +1,1 @@
-Custim install DOD
+Custom install DOD
