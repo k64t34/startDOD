@@ -2,6 +2,9 @@
 /.vs/* 
 /startDOD/bin/*
 /startDOD/obj/*
+/startDOD/.vs/*
 /InstallDOD/bin/* 
 /InstallDOD/obj/* 
+/InstallDOD/.vs/* 
 #/startDOD/lib/*
+
