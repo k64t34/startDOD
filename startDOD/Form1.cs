@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+//using System.Collections.Generic;
+//using System.ComponentModel;
+//using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
+//using System.Linq;
+//using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Data.Common;
-using System.Data.SQLite;
+//using System.Data.Common;
+//using System.Data.SQLite;
 
 namespace startDOD
 {
@@ -18,7 +18,8 @@ namespace startDOD
         string updateFolder ;
         const string RunMOD = "День Победы";
         const string revLoader = "revLoader.exe";
-        public Form1()
+        char[] separatingChars = { ' ', '\t' };
+    public Form1()
         {
             InitializeComponent();
         }
@@ -30,7 +31,7 @@ namespace startDOD
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            //Tune form control
             panel_Console.Width = this.Width - panel_Console.Left - panel_Console.Margin.All;
             panel_Console.Height = this.Height - panel_Console.Top - panel_Console.Margin.All - panel_Console.Margin.All;
             label_Console_cmd.Left = panel_Console.Padding.All;
@@ -56,12 +57,11 @@ namespace startDOD
                     string INIline;
                     while ((INIline = sINI.ReadLine()) != null)
                     {
-                        INIline=INIline.TrimStart();
-                        if (!INIline.StartsWith("#"))
-                        {
-                            updateFolder = INIline.TrimEnd();
-                            break;
-                        }                        
+                        INIline=INIline.Trim();
+                        if (INIline.Length==0) continue;
+                        if (INIline.StartsWith("#")) continue;
+                        updateFolder = INIline.TrimEnd();
+                        break;                                                
                     }
                     if (updateFolder == null) textBox_Console.AppendText("Файла конфигурации не содержить ссылку на папку обновлений"+Environment.NewLine);
                     else if (!Directory.Exists(updateFolder)) textBox_Console.AppendText("Указанная папка обновлений не найдена " + updateFolder + Environment.NewLine);
@@ -69,6 +69,17 @@ namespace startDOD
                     {
                         if (!updateFolder.EndsWith("\\")) updateFolder += "\\";
                         string updateFile = updateFolder + "update.txt";
+                        string lastupdate = null;
+                        // TODO: read file from end
+                        while ((INIline = sINI.ReadLine()) != null) //goto last update
+                        {
+                            INIline = INIline.TrimStart();
+                            if (INIline.StartsWith("#")) continue;
+                            if (INIline.Length==0) continue;
+                            lastupdate = INIline.Trim();
+                        }
+                        sINI.Close();
+
                         if (!File.Exists(updateFile)) textBox_Console.AppendText("Файл обновлений не найден " + updateFile + Environment.NewLine);
                         else
                         {
@@ -76,15 +87,35 @@ namespace startDOD
                             using (StreamReader sUPDATE = new StreamReader(updateFile))
                             {
                                 string UPDATEline;
+                                string[] UpdateLineWords;
+                                // Find last update
                                 while ((UPDATEline = sUPDATE.ReadLine()) != null)
                                 {
-                                    textBox_Console.AppendText(UPDATEline + Environment.NewLine);
-                                    //sqlite 
-                                    //https://devpractice.ru/sqlite-c/
-                                    //https://habr.com/post/56694/
-                                    //https://stackoverflow.com/questions/35499901/what-is-the-exact-sytax-to-open-sqlite-temporary-database-using-vb-net
-
+                                    UPDATEline = UPDATEline.TrimStart();
+                                    if (UPDATEline.StartsWith("#")) continue; // skip comment
+                                    if (UPDATEline.Length==0) continue; // skip empty line
+                                    {
+                                        UpdateLineWords = UPDATEline.Split(separatingChars);
+                                        if (lastupdate == null) break;
+                                        if (UpdateLineWords[0] == lastupdate) break;                                        
+                                    }
                                 }
+                                //do update
+                                StreamWriter swINI = File.AppendText(iniFile);
+                                swINI.WriteLine();
+                                
+                                 while ((UPDATEline = sUPDATE.ReadLine()) != null)
+                                    {
+                                    UPDATEline = UPDATEline.TrimStart();
+                                    if (UPDATEline.StartsWith("#")) continue;// skip comment
+                                    if (UPDATEline.Length == 0) continue; // skip empty line
+                                    {                                    
+                                        UpdateLineWords = UPDATEline.Split(separatingChars);
+                                        textBox_Console.AppendText("Установка обновления "+UpdateLineWords[0] + Environment.NewLine);
+                                        swINI.WriteLine(UpdateLineWords[0]);
+                                    }                                    
+                                }
+                                swINI.Close();
                             }
                         }
                     }
