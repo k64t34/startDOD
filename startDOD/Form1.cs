@@ -15,11 +15,11 @@ namespace startDOD
     public partial class Form1 : Form
     {
         string workFolder = AppDomain.CurrentDomain.BaseDirectory;
-        string updateFolder ;
+        string updateFolder;
         const string RunMOD = "День Победы";
         const string revLoader = "revLoader.exe";
         char[] separatingChars = { ' ', '\t' };
-    public Form1()
+        public Form1()
         {
             InitializeComponent();
         }
@@ -44,26 +44,26 @@ namespace startDOD
             label_Console_cmd.BackColor = Color.FromArgb(100, 48, 48, 48);
             panel_Console.Visible = true;
 
-            textBox_Console.AppendText("Рабочая папка " + workFolder+Environment.NewLine);
+            textBox_Console.AppendText("Рабочая папка " + workFolder + Environment.NewLine);
             string iniFile = RunMOD + ".ini";
-            
+
             if (!File.Exists(workFolder + iniFile)) textBox_Console.AppendText("Файла конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine);
             else
             {
                 iniFile = workFolder + iniFile;
-                textBox_Console.AppendText("Чтение файла конфигурации " + iniFile  + Environment.NewLine);
+                textBox_Console.AppendText("Чтение файла конфигурации " + iniFile + Environment.NewLine);
                 using (StreamReader sINI = new StreamReader(iniFile))
                 {
                     string INIline;
                     while ((INIline = sINI.ReadLine()) != null)
                     {
-                        INIline=INIline.Trim();
-                        if (INIline.Length==0) continue;
+                        INIline = INIline.Trim();
+                        if (INIline.Length == 0) continue;
                         if (INIline.StartsWith("#")) continue;
                         updateFolder = INIline.TrimEnd();
-                        break;                                                
+                        break;
                     }
-                    if (updateFolder == null) textBox_Console.AppendText("Файла конфигурации не содержить ссылку на папку обновлений"+Environment.NewLine);
+                    if (updateFolder == null) textBox_Console.AppendText("Файла конфигурации не содержить ссылку на папку обновлений" + Environment.NewLine);
                     else if (!Directory.Exists(updateFolder)) textBox_Console.AppendText("Указанная папка обновлений не найдена " + updateFolder + Environment.NewLine);
                     else
                     {
@@ -75,7 +75,7 @@ namespace startDOD
                         {
                             INIline = INIline.TrimStart();
                             if (INIline.StartsWith("#")) continue;
-                            if (INIline.Length==0) continue;
+                            if (INIline.Length == 0) continue;
                             lastupdate = INIline.Trim();
                         }
                         sINI.Close();
@@ -89,31 +89,41 @@ namespace startDOD
                                 string UPDATEline;
                                 string[] UpdateLineWords;
                                 // Find last update
-                                while ((UPDATEline = sUPDATE.ReadLine()) != null)
+                                if (lastupdate != null)
                                 {
-                                    UPDATEline = UPDATEline.TrimStart();
-                                    if (UPDATEline.StartsWith("#")) continue; // skip comment
-                                    if (UPDATEline.Length==0) continue; // skip empty line
+                                    while ((UPDATEline = sUPDATE.ReadLine()) != null)
                                     {
-                                        UpdateLineWords = UPDATEline.Split(separatingChars);
-                                        if (lastupdate == null) break;
-                                        if (UpdateLineWords[0] == lastupdate) break;                                        
+                                        UPDATEline = UPDATEline.TrimStart();
+                                        if (UPDATEline.StartsWith("#")) continue; // skip comment
+                                        if (UPDATEline.Length == 0) continue; // skip empty line
+                                        {
+                                            UpdateLineWords = UPDATEline.Split(separatingChars);
+
+                                            if (UpdateLineWords[0] == lastupdate) break;
+                                        }
                                     }
                                 }
                                 //do update
                                 StreamWriter swINI = File.AppendText(iniFile);
                                 swINI.WriteLine();
-                                
-                                 while ((UPDATEline = sUPDATE.ReadLine()) != null)
-                                    {
+                                System.Environment.SetEnvironmentVariable("FolderInstall", workFolder, EnvironmentVariableTarget.User);
+                                while ((UPDATEline = sUPDATE.ReadLine()) != null)
+                                {
                                     UPDATEline = UPDATEline.TrimStart();
                                     if (UPDATEline.StartsWith("#")) continue;// skip comment
                                     if (UPDATEline.Length == 0) continue; // skip empty line
-                                    {                                    
+                                    {
                                         UpdateLineWords = UPDATEline.Split(separatingChars);
-                                        textBox_Console.AppendText("Установка обновления "+UpdateLineWords[0] + Environment.NewLine);
-                                        swINI.WriteLine(UpdateLineWords[0]);
-                                    }                                    
+                                        string updateFilecmd = updateFolder + UpdateLineWords[0] + ".cmd";
+                                        if (!File.Exists(updateFilecmd)) textBox_Console.AppendText("Файл обновления не найден " + updateFilecmd + Environment.NewLine);
+                                        else
+                                        {
+                                            textBox_Console.AppendText("Установка обновления " + UpdateLineWords[0] + Environment.NewLine);
+                                            RUN_cmd(updateFilecmd);
+                                            swINI.WriteLine(UpdateLineWords[0]);
+                                        }
+
+                                    }
                                 }
                                 swINI.Close();
                             }
@@ -121,7 +131,22 @@ namespace startDOD
                     }
 
                 }
+                textBox_Console.AppendText("Запуск " + RunMOD + Environment.NewLine);
+                #if !DEBUG
+                LoadRevEmu();
+                System.Threading.Thread.Sleep(5000);
+                this.Close();
+                #endif
+
+
             }
+        }
+        private void LoadRevEmu()
+            {
+            }
+        private void RUN_cmd(string cmdFile)
+            {
+            textBox_Console.AppendText("Запуск" + cmdFile+Environment.NewLine);
         }
     }
 }

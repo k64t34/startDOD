@@ -37,10 +37,10 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label_CE = new System.Windows.Forms.Label();
             this.panel_Console = new System.Windows.Forms.Panel();
-            this.label_panel_Console_Title = new System.Windows.Forms.Label();
-            this.textBox_Console = new System.Windows.Forms.TextBox();
-            this.button_cmd = new System.Windows.Forms.Button();
             this.label_Console_cmd = new System.Windows.Forms.Label();
+            this.button_cmd = new System.Windows.Forms.Button();
+            this.textBox_Console = new System.Windows.Forms.TextBox();
+            this.label_panel_Console_Title = new System.Windows.Forms.Label();
             this.panel_Console.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -146,16 +146,25 @@
             this.panel_Console.TabIndex = 18;
             this.panel_Console.Visible = false;
             // 
-            // label_panel_Console_Title
+            // label_Console_cmd
             // 
-            this.label_panel_Console_Title.BackColor = System.Drawing.Color.Transparent;
-            this.label_panel_Console_Title.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label_panel_Console_Title.Location = new System.Drawing.Point(16, 16);
-            this.label_panel_Console_Title.Margin = new System.Windows.Forms.Padding(10);
-            this.label_panel_Console_Title.Name = "label_panel_Console_Title";
-            this.label_panel_Console_Title.Size = new System.Drawing.Size(738, 18);
-            this.label_panel_Console_Title.TabIndex = 0;
-            this.label_panel_Console_Title.Text = "Консоль";
+            this.label_Console_cmd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label_Console_cmd.Location = new System.Drawing.Point(16, 578);
+            this.label_Console_cmd.Name = "label_Console_cmd";
+            this.label_Console_cmd.Size = new System.Drawing.Size(645, 23);
+            this.label_Console_cmd.TabIndex = 3;
+            // 
+            // button_cmd
+            // 
+            this.button_cmd.AutoSize = true;
+            this.button_cmd.Enabled = false;
+            this.button_cmd.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button_cmd.Location = new System.Drawing.Point(673, 582);
+            this.button_cmd.Name = "button_cmd";
+            this.button_cmd.Size = new System.Drawing.Size(90, 28);
+            this.button_cmd.TabIndex = 2;
+            this.button_cmd.Text = "Выполнить";
+            this.button_cmd.UseVisualStyleBackColor = true;
             // 
             // textBox_Console
             // 
@@ -170,25 +179,16 @@
             this.textBox_Console.Size = new System.Drawing.Size(738, 534);
             this.textBox_Console.TabIndex = 1;
             // 
-            // button_cmd
+            // label_panel_Console_Title
             // 
-            this.button_cmd.AutoSize = true;
-            this.button_cmd.Enabled = false;
-            this.button_cmd.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button_cmd.Location = new System.Drawing.Point(673, 582);
-            this.button_cmd.Name = "button_cmd";
-            this.button_cmd.Size = new System.Drawing.Size(90, 28);
-            this.button_cmd.TabIndex = 2;
-            this.button_cmd.Text = "Выполнить";
-            this.button_cmd.UseVisualStyleBackColor = true;
-            // 
-            // label_Console_cmd
-            // 
-            this.label_Console_cmd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label_Console_cmd.Location = new System.Drawing.Point(16, 578);
-            this.label_Console_cmd.Name = "label_Console_cmd";
-            this.label_Console_cmd.Size = new System.Drawing.Size(645, 23);
-            this.label_Console_cmd.TabIndex = 3;
+            this.label_panel_Console_Title.BackColor = System.Drawing.Color.Transparent;
+            this.label_panel_Console_Title.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label_panel_Console_Title.Location = new System.Drawing.Point(16, 16);
+            this.label_panel_Console_Title.Margin = new System.Windows.Forms.Padding(10);
+            this.label_panel_Console_Title.Name = "label_panel_Console_Title";
+            this.label_panel_Console_Title.Size = new System.Drawing.Size(738, 18);
+            this.label_panel_Console_Title.TabIndex = 0;
+            this.label_panel_Console_Title.Text = "Консоль";
             // 
             // Form1
             // 
@@ -210,7 +210,7 @@
             this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form1";

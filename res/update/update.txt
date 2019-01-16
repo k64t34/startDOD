@@ -1,5 +1,5 @@
 d001	run	UnRAR.exe ..\steamapp\
-c001	goto c002 copy 
-p001	script
-m001	cmd copy 
-c002	copy 
+c001 goto c002 copy 
+ p001 script
+	m001	cmd copy 
+				 c002   	copy 
