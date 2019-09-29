@@ -42,14 +42,11 @@ namespace InstallDOD
 		}
 		void Button1Click(object sender, EventArgs e)
 		{
-			this.Close();
+            panel_Folder.Visible = false;            
+            System.Threading.Thread.Sleep(1000);
+            this.Close();
 		}
-		void Label8Click(object sender, EventArgs e)
-		{
-			this.Close();
-		}
-
-		void Label8MouseLeave(object sender, EventArgs e)
+			void Label8MouseLeave(object sender, EventArgs e)
 		{		
 			label8.ForeColor=System.Drawing.Color.White;
 		}
@@ -60,7 +57,14 @@ namespace InstallDOD
 		}
 		void MainFormLoad(object sender, EventArgs e)
 		{
-			panel_Folder.BackColor=Color.FromArgb(200, 128, 128, 128);			
+            /*TODO: Устанить мерцание
+             * http://qaru.site/questions/108054/how-to-stop-flickering-c-winforms
+            this.SetStyle(
+                System.Windows.Forms.ControlStyles.UserPaint |
+                System.Windows.Forms.ControlStyles.AllPaintingInWmPaint |
+                System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer,
+                true);*/
+            panel_Folder.BackColor=Color.FromArgb(200, 128, 128, 128);			
 			comboBox_Disks.Items.Clear();
 			DriveInfo[] allDrives = DriveInfo.GetDrives();//https://docs.microsoft.com/ru-ru/dotnet/api/system.io.driveinfo.getdrives?view=netframework-4.7.2
 			foreach (DriveInfo d in allDrives)
@@ -68,8 +72,11 @@ namespace InstallDOD
 				if (d.DriveType==DriveType.Fixed || d.DriveType==DriveType.Removable )
 				comboBox_Disks.Items.Add(d.Name);
 			}			
-			comboBox_Disks.SelectedIndex=0;
-		}
+			comboBox_Disks.SelectedIndex=0;            
+            System.Threading.Thread.Sleep(1000);
+            panel_Folder.Visible = true;
+
+        }
 		void ComboBox_DisksSelectedIndexChanged(object sender, EventArgs e)
 		{
 			textBox_TargetFolder.Text=comboBox_Disks.Items[comboBox_Disks.SelectedIndex].ToString();
@@ -137,7 +144,8 @@ namespace InstallDOD
 			
 			
 		}
-		void Button_folder_OKClick(object sender, EventArgs e)
+        // Button_folder_OKClick
+        void Button_folder_OKClick(object sender, EventArgs e)
 		{
             string strFile = textBox_TargetFolder.Text + Mod + ".ini";
             

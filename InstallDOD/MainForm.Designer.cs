@@ -99,6 +99,7 @@ namespace InstallDOD
             this.panel_Folder.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
             this.panel_Folder.Size = new System.Drawing.Size(597, 464);
             this.panel_Folder.TabIndex = 8;
+            this.panel_Folder.Visible = false;
             // 
             // label9
             // 
@@ -199,7 +200,7 @@ namespace InstallDOD
             this.button_folder_Cancel.TabIndex = 13;
             this.button_folder_Cancel.Text = "Отмена";
             this.button_folder_Cancel.UseVisualStyleBackColor = true;
-            this.button_folder_Cancel.Click += new System.EventHandler(this.Label8Click);
+            this.button_folder_Cancel.Click += new System.EventHandler(this.Button1Click);
             // 
             // button_folder_OK
             // 
@@ -307,7 +308,7 @@ namespace InstallDOD
             this.label8.Size = new System.Drawing.Size(56, 18);
             this.label8.TabIndex = 10;
             this.label8.Text = "ВЫХОД";
-            this.label8.Click += new System.EventHandler(this.Label8Click);
+            this.label8.Click += new System.EventHandler(this.Button1Click);
             this.label8.MouseEnter += new System.EventHandler(this.Label8MouseEnter);
             this.label8.MouseLeave += new System.EventHandler(this.Label8MouseLeave);
             // 
