@@ -158,7 +158,7 @@ namespace InstallDOD
                 try
                 {
                     // Copy starter to destination folder
-                    System.IO.File.Copy(ScriptFolder + Mod + ".exe", strFile, true);
+                    System.IO.File.Copy(ScriptFolder + "update\\" +Mod + ".exe", strFile, true);
                     try
                     {
                         //Ярлык на рабочем столе
@@ -176,15 +176,15 @@ namespace InstallDOD
                             {
                                 using (Process myProcess = new Process())
                                 {
-                                    myProcess.StartInfo.UseShellExecute = false;
-                                    myProcess.StartInfo.FileName = Mod + ".exe";
+                                    myProcess.StartInfo.UseShellExecute = false;                                    
                                     myProcess.StartInfo.WorkingDirectory = textBox_TargetFolder.Text;
+                                    myProcess.StartInfo.FileName = myProcess.StartInfo.WorkingDirectory + Mod + ".exe";
                                     myProcess.Start();
                                     System.Threading.Thread.Sleep(3000);
                                 }
                             }
                             catch (Exception ex)
-                            { MessageBox.Show(ex.Message.ToString(), "Ошибка при запуске стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                            { MessageBox.Show(ex.Message.ToString(), "Ошибка при запуске стартера\n", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                         }
                         catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при создании ярлыка стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                     }
