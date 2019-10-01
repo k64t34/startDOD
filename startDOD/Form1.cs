@@ -64,72 +64,74 @@ namespace startDOD
                         break;
                     }
                     if (updateFolder == null) textBox_Console.AppendText("Файла конфигурации не содержить ссылку на папку обновлений" + Environment.NewLine);
-                    else if (!Directory.Exists(updateFolder)) textBox_Console.AppendText("Указанная папка обновлений не найдена " + updateFolder + Environment.NewLine);
                     else
                     {
-                        if (!updateFolder.EndsWith("\\")) updateFolder += "\\";
-                        string updateFile = updateFolder + "update.txt";
-                        string lastupdate = null;
-                        // TODO: read file from end
-                        while ((INIline = sINI.ReadLine()) != null) //goto last update
-                        {
-                            INIline = INIline.TrimStart();
-                            if (INIline.StartsWith("#")) continue;
-                            if (INIline.Length == 0) continue;
-                            lastupdate = INIline.Trim();
-                        }
-                        sINI.Close();
-
-                        if (!File.Exists(updateFile)) textBox_Console.AppendText("Файл обновлений не найден " + updateFile + Environment.NewLine);
+                        updateFolder += "update";
+                        if (!Directory.Exists(updateFolder)) textBox_Console.AppendText("Указанная папка обновлений не найдена " + updateFolder + Environment.NewLine);
                         else
                         {
-                            textBox_Console.AppendText("Чтение файла обновлений " + updateFile + Environment.NewLine);
-                            using (StreamReader sUPDATE = new StreamReader(updateFile))
+                            if (!updateFolder.EndsWith("\\")) updateFolder += "\\";
+                            string updateFile = updateFolder + "update.txt";
+                            string lastupdate = null;
+                            // TODO: read file from end
+                            while ((INIline = sINI.ReadLine()) != null) //goto last update
                             {
-                                string UPDATEline;
-                                string[] UpdateLineWords;
-                                // Find last update
-                                if (lastupdate != null)
+                                INIline = INIline.TrimStart();
+                                if (INIline.StartsWith("#")) continue;
+                                if (INIline.Length == 0) continue;
+                                lastupdate = INIline.Trim();
+                            }
+                            sINI.Close();
+
+                            if (!File.Exists(updateFile)) textBox_Console.AppendText("Файл обновлений не найден " + updateFile + Environment.NewLine);
+                            else
+                            {
+                                textBox_Console.AppendText("Чтение файла обновлений " + updateFile + Environment.NewLine);
+                                using (StreamReader sUPDATE = new StreamReader(updateFile))
                                 {
+                                    string UPDATEline;
+                                    string[] UpdateLineWords;
+                                    // Find last update
+                                    if (lastupdate != null)
+                                    {
+                                        while ((UPDATEline = sUPDATE.ReadLine()) != null)
+                                        {
+                                            UPDATEline = UPDATEline.TrimStart();
+                                            if (UPDATEline.StartsWith("#")) continue; // skip comment
+                                            if (UPDATEline.Length == 0) continue; // skip empty line
+                                            {
+                                                UpdateLineWords = UPDATEline.Split(separatingChars);
+
+                                                if (UpdateLineWords[0] == lastupdate) break;
+                                            }
+                                        }
+                                    }
+                                    //do update
+                                    StreamWriter swINI = File.AppendText(iniFile);
+                                    swINI.WriteLine();
+                                    System.Environment.SetEnvironmentVariable("FolderInstall", workFolder, EnvironmentVariableTarget.User);
                                     while ((UPDATEline = sUPDATE.ReadLine()) != null)
                                     {
                                         UPDATEline = UPDATEline.TrimStart();
-                                        if (UPDATEline.StartsWith("#")) continue; // skip comment
+                                        if (UPDATEline.StartsWith("#")) continue;// skip comment
                                         if (UPDATEline.Length == 0) continue; // skip empty line
                                         {
                                             UpdateLineWords = UPDATEline.Split(separatingChars);
-
-                                            if (UpdateLineWords[0] == lastupdate) break;
+                                            string updateFilecmd = updateFolder + UpdateLineWords[0] + ".cmd";
+                                            if (!File.Exists(updateFilecmd)) textBox_Console.AppendText("Файл обновления не найден " + updateFilecmd + Environment.NewLine);
+                                            else
+                                            {
+                                                textBox_Console.AppendText("Установка обновления " + UpdateLineWords[0] + Environment.NewLine);
+                                                RUN_cmd(updateFilecmd);
+                                                swINI.WriteLine(UpdateLineWords[0]);
+                                            }
                                         }
                                     }
+                                    swINI.Close();
                                 }
-                                //do update
-                                StreamWriter swINI = File.AppendText(iniFile);
-                                swINI.WriteLine();
-                                System.Environment.SetEnvironmentVariable("FolderInstall", workFolder, EnvironmentVariableTarget.User);
-                                while ((UPDATEline = sUPDATE.ReadLine()) != null)
-                                {
-                                    UPDATEline = UPDATEline.TrimStart();
-                                    if (UPDATEline.StartsWith("#")) continue;// skip comment
-                                    if (UPDATEline.Length == 0) continue; // skip empty line
-                                    {
-                                        UpdateLineWords = UPDATEline.Split(separatingChars);
-                                        string updateFilecmd = updateFolder + UpdateLineWords[0] + ".cmd";
-                                        if (!File.Exists(updateFilecmd)) textBox_Console.AppendText("Файл обновления не найден " + updateFilecmd + Environment.NewLine);
-                                        else
-                                        {
-                                            textBox_Console.AppendText("Установка обновления " + UpdateLineWords[0] + Environment.NewLine);
-                                            RUN_cmd(updateFilecmd);
-                                            swINI.WriteLine(UpdateLineWords[0]);
-                                        }
-
-                                    }
-                                }
-                                swINI.Close();
                             }
                         }
                     }
-
                 }
                 textBox_Console.AppendText("Запуск " + RunMOD + Environment.NewLine);
                 #if !DEBUG

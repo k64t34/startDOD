@@ -1,5 +1,10 @@
-d001	run	UnRAR.exe ..\steamapp\
-c001 goto c002 copy 
- p001 script
-	m001	cmd copy 
-				 c002   	copy 
+#Copy SteamApp
+d01102019 UnRAR.exe ..\steamapp\
+#Copy RevEmu
+revemu2014
+#Copy RedArmyMOD
+RedArmyMOD2014
+#AddRegistry Russian  language
+regrus2014
+#AddServer (replace connect in autoexec.cfg)
+SRCDS01102019
