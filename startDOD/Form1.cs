@@ -55,34 +55,26 @@ namespace startDOD
                 using (StreamReader sINI = new StreamReader(iniFile))
                 {
                     string INIline;
+                    int StartLogLine=0;
                     while ((INIline = sINI.ReadLine()) != null)
                     {
+                        StartLogLine++;
                         INIline = INIline.Trim();
                         if (INIline.Length == 0) continue;
                         if (INIline.StartsWith("#")) continue;
-                        updateFolder = INIline.TrimEnd();
+                        updateFolder = INIline.TrimEnd();                        
                         break;
                     }
                     if (updateFolder == null) textBox_Console.AppendText("Файла конфигурации не содержить ссылку на папку обновлений" + Environment.NewLine);
                     else
                     {
-                        updateFolder += "update";
+                        if (!updateFolder.EndsWith("\\")) updateFolder += "\\";
+                        updateFolder += "update\\";
                         if (!Directory.Exists(updateFolder)) textBox_Console.AppendText("Указанная папка обновлений не найдена " + updateFolder + Environment.NewLine);
                         else
-                        {
-                            if (!updateFolder.EndsWith("\\")) updateFolder += "\\";
-                            string updateFile = updateFolder + "update.txt";
-                            string lastupdate = null;
-                            // TODO: read file from end
-                            while ((INIline = sINI.ReadLine()) != null) //goto last update
-                            {
-                                INIline = INIline.TrimStart();
-                                if (INIline.StartsWith("#")) continue;
-                                if (INIline.Length == 0) continue;
-                                lastupdate = INIline.Trim();
-                            }
-                            sINI.Close();
-
+                        {                            
+                            string updateFile = updateFolder + "update.txt";                           
+                            
                             if (!File.Exists(updateFile)) textBox_Console.AppendText("Файл обновлений не найден " + updateFile + Environment.NewLine);
                             else
                             {
@@ -91,25 +83,10 @@ namespace startDOD
                                 {
                                     string UPDATEline;
                                     string[] UpdateLineWords;
-                                    // Find last update
-                                    if (lastupdate != null)
-                                    {
-                                        while ((UPDATEline = sUPDATE.ReadLine()) != null)
-                                        {
-                                            UPDATEline = UPDATEline.TrimStart();
-                                            if (UPDATEline.StartsWith("#")) continue; // skip comment
-                                            if (UPDATEline.Length == 0) continue; // skip empty line
-                                            {
-                                                UpdateLineWords = UPDATEline.Split(separatingChars);
-
-                                                if (UpdateLineWords[0] == lastupdate) break;
-                                            }
-                                        }
-                                    }
-                                    //do update
-                                    StreamWriter swINI = File.AppendText(iniFile);
-                                    swINI.WriteLine();
-                                    System.Environment.SetEnvironmentVariable("FolderInstall", workFolder, EnvironmentVariableTarget.User);
+                                    string[] INILineWords;
+                                    //StreamWriter swINI = File.AppendText(iniFile);
+                                    //swINI.WriteLine();
+                                    //System.Environment.SetEnvironmentVariable("FolderInstall", workFolder, EnvironmentVariableTarget.User);
                                     while ((UPDATEline = sUPDATE.ReadLine()) != null)
                                     {
                                         UPDATEline = UPDATEline.TrimStart();
@@ -117,17 +94,51 @@ namespace startDOD
                                         if (UPDATEline.Length == 0) continue; // skip empty line
                                         {
                                             UpdateLineWords = UPDATEline.Split(separatingChars);
-                                            string updateFilecmd = updateFolder + UpdateLineWords[0] + ".cmd";
-                                            if (!File.Exists(updateFilecmd)) textBox_Console.AppendText("Файл обновления не найден " + updateFilecmd + Environment.NewLine);
-                                            else
+                                            textBox_Console.AppendText(UpdateLineWords[0]);
+                                            if (UpdateLineWords.Length <= 3)
                                             {
-                                                textBox_Console.AppendText("Установка обновления " + UpdateLineWords[0] + Environment.NewLine);
-                                                RUN_cmd(updateFilecmd);
-                                                swINI.WriteLine(UpdateLineWords[0]);
+                                                textBox_Console.AppendText(" invalid line"  + Environment.NewLine);
+                                                continue; // skip invalid line
                                             }
+                                            textBox_Console.AppendText(" " + UpdateLineWords[1]);
+                                            //check this update in client INI file
+                                            int LogLineCounter = 0;
+                                            bool needUpdate = true;
+                                            while ((INIline = sINI.ReadLine()) != null)
+                                            {
+                                                LogLineCounter++;
+                                                if (LogLineCounter < StartLogLine) continue;                                                
+                                                INIline = INIline.Trim();
+                                                if (INIline.Length == 0) continue;
+                                                if (INIline.StartsWith("#")) continue;
+                                                INIline = INIline.TrimEnd();
+                                                INILineWords = INIline.Split(separatingChars);
+                                                if (INILineWords[0] == UpdateLineWords[0])
+                                                {
+                                                    if (INILineWords.Length>=2)
+                                                    {                                                        
+                                                        if (INILineWords[1] == UpdateLineWords[1])
+                                                            needUpdate = false;
+                                                     }
+                                                        
+                                                }       
+                                            }
+                                            if (needUpdate)
+                                            {
+                                                textBox_Console.AppendText(" updating..." + Environment.NewLine);
+                                            }
+                                            //string updateFilecmd = updateFolder + UpdateLineWords[0] + ".cmd";
+                                            //if (!File.Exists(updateFilecmd)) textBox_Console.AppendText("Файл обновления не найден " + updateFilecmd + Environment.NewLine);
+                                            //else
+                                            //{
+                                            //textBox_Console.AppendText(updateFilecmd + Environment.NewLine);
+                                            //textBox_Console.AppendText("Установка обновления " + UpdateLineWords[0] + Environment.NewLine);
+                                            //RUN_cmd(updateFilecmd);
+                                            //swINI.WriteLine(UpdateLineWords[0]);
+                                            //}
                                         }
                                     }
-                                    swINI.Close();
+                                    sINI.Close();
                                 }
                             }
                         }
@@ -146,9 +157,21 @@ namespace startDOD
         private void LoadRevEmu()
             {
             }
-        private void RUN_cmd(string cmdFile)
+        private void CFG(string cmdFile, string Param, string Value)
             {
-            textBox_Console.AppendText("Запуск" + cmdFile+Environment.NewLine);
+            textBox_Console.AppendText("Конфигурация" + cmdFile+" "+Param+" "+Value+Environment.NewLine);
+        }
+        private void UNZIP(string cmdFile)
+        {
+            textBox_Console.AppendText("Распаковка" + cmdFile + Environment.NewLine);
+        }
+        private void REGimport(string cmdFile)
+        {
+            textBox_Console.AppendText("Правка реестра" + cmdFile + Environment.NewLine);
+        }
+        private void SYNC(string cmdFolder)
+        {
+            textBox_Console.AppendText("Синхронизация" + cmdFolder + Environment.NewLine);
         }
     }
 }
