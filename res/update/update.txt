@@ -1,12 +1,12 @@
 #Copy SteamApp
 SteamApp	 01102019	  	 UNZIP DOD2018.rar
 #Copy RevEmu
-revemu	2014	UNZIP	revemu2014 
+revemu	2014	UNZIP	revemu2014.rar 
 #Copy RedArmyMOD
-RedArmyMOD	2014	UNZIP	RedArmyMOD2014 
+RedArmyMOD	2014	UNZIP	RedArmyMOD2014.rar 
 #AddRegistry Russian  language
 regrus	2014	REG RUS.reg
 #AddServer (replace connect in autoexec.cfg)
-SRCDS	01102019	CFG cfg\autoexec.cfg connect 172.19.1.44:28015	
+#SRCDS	01102019	CFG cfg\autoexec.cfg connect 172.19.1.44:28015	
 #Синхронизация от сервера к клиенту
-SYNC	01102019	SYNC	SYNC
+#SYNC	01102019	SYNC	SYNC
