@@ -1,5 +1,5 @@
 #Copy SteamApp
-SteamApp	01102019 	UNZIP DOD2018.rar
+SteamApp	 01102019	  	 UNZIP DOD2018.rar
 #Copy RevEmu
 revemu	2014	UNZIP	revemu2014 
 #Copy RedArmyMOD

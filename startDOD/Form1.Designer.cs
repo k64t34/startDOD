@@ -176,6 +176,7 @@
             this.textBox_Console.Margin = new System.Windows.Forms.Padding(10);
             this.textBox_Console.Multiline = true;
             this.textBox_Console.Name = "textBox_Console";
+            this.textBox_Console.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox_Console.Size = new System.Drawing.Size(738, 534);
             this.textBox_Console.TabIndex = 1;
             // 

@@ -4,11 +4,13 @@
 //using System.Data;
 using System.Drawing;
 //using System.Linq;
-//using System.Text;
+using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 //using System.Data.Common;
 //using System.Data.SQLite;
+using System.Threading;
 
 namespace startDOD
 {
@@ -19,6 +21,7 @@ namespace startDOD
         const string RunMOD = "День Победы";
         const string revLoader = "revLoader.exe";
         char[] separatingChars = { ' ', '\t' };
+        SynchronizationContext _syncContext;       
         public Form1()
         {
             InitializeComponent();
@@ -31,6 +34,7 @@ namespace startDOD
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            _syncContext = SynchronizationContext.Current;
             //Tune form control
             panel_Console.Width = this.Width - panel_Console.Left - panel_Console.Margin.All;
             panel_Console.Height = this.Height - panel_Console.Top - panel_Console.Margin.All - panel_Console.Margin.All;
@@ -93,9 +97,9 @@ namespace startDOD
                                         if (UPDATEline.StartsWith("#")) continue;// skip comment
                                         if (UPDATEline.Length == 0) continue; // skip empty line
                                         {
-                                            UpdateLineWords = UPDATEline.Split(separatingChars);
+                                            UpdateLineWords = UPDATEline.Split(separatingChars,StringSplitOptions.RemoveEmptyEntries);
                                             textBox_Console.AppendText(UpdateLineWords[0]);
-                                            if (UpdateLineWords.Length <= 3)
+                                            if (UpdateLineWords.Length < 3)
                                             {
                                                 textBox_Console.AppendText(" invalid line"  + Environment.NewLine);
                                                 continue; // skip invalid line
@@ -112,7 +116,7 @@ namespace startDOD
                                                 if (INIline.Length == 0) continue;
                                                 if (INIline.StartsWith("#")) continue;
                                                 INIline = INIline.TrimEnd();
-                                                INILineWords = INIline.Split(separatingChars);
+                                                INILineWords = INIline.Split(separatingChars, StringSplitOptions.RemoveEmptyEntries);
                                                 if (INILineWords[0] == UpdateLineWords[0])
                                                 {
                                                     if (INILineWords.Length>=2)
@@ -124,8 +128,22 @@ namespace startDOD
                                                 }       
                                             }
                                             if (needUpdate)
-                                            {
-                                                textBox_Console.AppendText(" updating..." + Environment.NewLine);
+                                            {                                                
+                                                UpdateLineWords[2] = UpdateLineWords[2].ToUpper();
+                                                textBox_Console.AppendText(" updating... " + UpdateLineWords[2] +" " );
+                                                if (String.Equals(UpdateLineWords[2], "UNZIP"))
+                                                {
+                                                    if (UpdateLineWords.Length<4)
+                                                        textBox_Console.AppendText(" Файл архива не указан" + Environment.NewLine);
+                                                    else
+                                                    if (UNZIP(UpdateLineWords[3]))
+                                                    {
+                                                        textBox_Console.AppendText(" OK"+Environment.NewLine);
+                                                        //TODO: Записать в MOD.ini успех обновления
+                                                    }
+                                                }
+                                                else
+                                                    textBox_Console.AppendText(" Invalid command." + Environment.NewLine);
                                             }
                                             //string updateFilecmd = updateFolder + UpdateLineWords[0] + ".cmd";
                                             //if (!File.Exists(updateFilecmd)) textBox_Console.AppendText("Файл обновления не найден " + updateFilecmd + Environment.NewLine);
@@ -161,9 +179,79 @@ namespace startDOD
             {
             textBox_Console.AppendText("Конфигурация" + cmdFile+" "+Param+" "+Value+Environment.NewLine);
         }
-        private void UNZIP(string cmdFile)
+        private bool UNZIP(string cmdFile)
         {
-            textBox_Console.AppendText("Распаковка" + cmdFile + Environment.NewLine);
+            textBox_Console.AppendText("Распаковка " + cmdFile);
+            cmdFile = updateFolder + cmdFile;
+            if (!File.Exists(cmdFile)) { textBox_Console.AppendText(" Архив " + cmdFile + " не найден " + Environment.NewLine);return (false); }
+            string UNZIPer;
+            UNZIPer = Environment.GetEnvironmentVariable("ProgramFiles")+ "\\WinRAR\\Rar.exe";
+            if (!File.Exists(UNZIPer))
+            {
+                UNZIPer = Environment.GetEnvironmentVariable("ProgramFiles(x86)") + "\\WinRAR\\Rar.exe";
+                if (!File.Exists(UNZIPer))
+                {
+                    UNZIPer = updateFolder + "UnRAR.exe";
+                    if (!File.Exists(UNZIPer)) { textBox_Console.AppendText(" Не найден распаковщик " + UNZIPer + Environment.NewLine); return (false); }
+                }
+            }
+            try
+            {
+                using (Process myProcess = new Process())
+                {
+                    myProcess.StartInfo.UseShellExecute = false;                    
+                    myProcess.StartInfo.FileName = UNZIPer;
+                    myProcess.StartInfo.Arguments = "x -y -o+ -sca -idcd  \"" + cmdFile +"\" \""+ workFolder+"\"";
+#if DEBUG
+
+                    textBox_Console.AppendText(myProcess.StartInfo.Arguments+ Environment.NewLine);
+#endif
+                    myProcess.StartInfo.UseShellExecute = false;
+                    myProcess.StartInfo.CreateNoWindow = true;
+                    myProcess.StartInfo.ErrorDialog = true;
+                    myProcess.StartInfo.RedirectStandardOutput = true;
+                    myProcess.StartInfo.RedirectStandardInput = true;
+                    myProcess.StartInfo.RedirectStandardError = true;
+                    //myProcess.OutputDataReceived += new DataReceivedEventHandler(OutputHandler);
+                    //myProcess.ErrorDataReceived += new DataReceivedEventHandler(OutputHandler);                    
+                    //myProcess.OutputDataReceived += (sender, args) => Display(args.Data);
+                    //myProcess.ErrorDataReceived += (sender, args) => Display(args.Data);
+                    StringBuilder so = new StringBuilder();
+                    myProcess.OutputDataReceived += (sender, args) => { so.AppendLine(args.Data); };
+                    myProcess.ErrorDataReceived += (sender, args) => { so.AppendLine(args.Data); };
+                    myProcess.Start();
+                    myProcess.BeginOutputReadLine();
+                    myProcess.BeginErrorReadLine();
+                    //myProcess.WaitForExit();
+                    Random random = new Random();
+                    int BufLine = 0;
+                    while (!myProcess.HasExited)
+                    {
+                        Thread.Sleep(random.Next(100, 1000));
+                        myProcess.Refresh();
+                        if (so.Length>BufLine)
+                        {
+                            
+                            //textBox_Console.AppendText(BufLine + Environment.NewLine);
+                            textBox_Console.AppendText(so.ToString().Substring(BufLine));
+                            BufLine = so.Length;
+                        }
+
+                    }
+                        //textBox_Console.AppendText(myProcess.StandardOutput.ReadToEnd());                    
+                    if (myProcess.ExitCode != 0) { textBox_Console.AppendText("Распаковщик вернул ошибку " + Environment.NewLine); return (false); }
+                    myProcess.Dispose();
+                    //textBox_Console.AppendText(so.ToString());
+
+                }
+            }
+            catch (Exception ex)
+            {
+                textBox_Console.AppendText(" Ошибка при запуске распаковщика " + ex.Message.ToString() + Environment.NewLine);
+                return (false);
+            }
+            //textBox_Console.AppendText(Environment.NewLine);
+            return (true);
         }
         private void REGimport(string cmdFile)
         {
@@ -172,6 +260,15 @@ namespace startDOD
         private void SYNC(string cmdFolder)
         {
             textBox_Console.AppendText("Синхронизация" + cmdFolder + Environment.NewLine);
+        }
+        private async void OutputHandler(object sendingProcess, DataReceivedEventArgs outLine)
+        {
+            //textBox_Console.Invoke(AppendText(outLine.Data));
+            
+        }
+        private void Display(string output)
+        {
+            _syncContext.Post(_ => textBox_Console.AppendText(output), null);
         }
     }
 }
