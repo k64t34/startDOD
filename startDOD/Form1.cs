@@ -18,7 +18,8 @@ namespace startDOD
     {
         string workFolder = AppDomain.CurrentDomain.BaseDirectory;
         string updateFolder;
-        const string RunMOD = "День Победы";
+        const string RunMOD = "dod";
+		const string RunMODTitle = "День Победы";
         const string revLoader = "revLoader.exe";
         char[] separatingChars = { ' ', '\t' };
         SynchronizationContext _syncContext;       
@@ -26,12 +27,7 @@ namespace startDOD
         {
             InitializeComponent();
         }
-
-        private void label8_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
+        private void label8_Click(object sender, EventArgs e){this.Close();}
         private void Form1_Load(object sender, EventArgs e)
         {
             _syncContext = SynchronizationContext.Current;
@@ -49,12 +45,11 @@ namespace startDOD
             panel_Console.Visible = true;
 
             textBox_Console.AppendText("Рабочая папка " + workFolder + Environment.NewLine);
-            string iniFile = RunMOD + ".ini";
+            string iniFile = RunMODTitle + ".ini";	iniFile = workFolder + iniFile;
 
-            if (!File.Exists(workFolder + iniFile)) textBox_Console.AppendText("Файла конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine);
+            if (!File.Exists(iniFile)) textBox_Console.AppendText("Файл конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine);
             else
-            {
-                iniFile = workFolder + iniFile;
+            {                
                 textBox_Console.AppendText("Чтение файла конфигурации " + iniFile + Environment.NewLine);
                 using (StreamReader sINI = new StreamReader(iniFile))
                 {
