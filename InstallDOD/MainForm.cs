@@ -147,12 +147,12 @@ namespace InstallDOD
         // Button_folder_OKClick
         void Button_folder_OKClick(object sender, EventArgs e)
 		{
-            string strFile = textBox_TargetFolder.Text + Mod + ".ini";
+            string strFile = textBox_TargetFolder.Text + Mod + ".log";
             
             try
             {
-                //Create ini file
-                System.IO.File.WriteAllText(strFile, ScriptFolder);
+                //Create log file
+                System.IO.File.WriteAllText(strFile, DateTime.Now.ToString("ddMMyyyy-hhmmss") +"\tFolderSourceUpdate\t"+ScriptFolder+"update");
                 //Starter
                 strFile = textBox_TargetFolder.Text + Mod + ".exe";
                 try
@@ -190,15 +190,10 @@ namespace InstallDOD
                     }
                     catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при обновлении ярлыка стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 }
-                catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при копировании стартера", MessageBoxButtons.OK, MessageBoxIcon.Error);  }
-
-                
-
+                catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при копировании стартера", MessageBoxButtons.OK, MessageBoxIcon.Error);  }               
             }
             catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при подготовке конфигурации стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }            
             this.Close();
-		}
-		
-		
-	}
+		}       
+    }
 }

@@ -66,7 +66,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\FolderSourceUpdate\</OutputPath>
     <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
@@ -77,6 +77,7 @@
     <DefineConstants />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+    <OutputPath>..\FolderSourceUpdate\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp">

@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle ("InstallDOD")]
-[assembly: AssemblyDescription("Установка Day of Defeat")]
+[assembly: AssemblyDescription("“становка Day of Defeat")]
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("")]
 [assembly: AssemblyProduct ("InstallDOD")]
@@ -24,8 +24,8 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can use the default the Revision and 
 // Build Numbers by using the '*' as shown below:
-[assembly: AssemblyVersion ("1.0.*")]
+[assembly: AssemblyVersion ("1.1.*")]
 [assembly: AssemblyInformationalVersion ("1")]
 [assembly: Guid ("bfa03708-d30c-4be1-9adc-a4e931de094e")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 

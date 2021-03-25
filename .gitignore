@@ -7,4 +7,6 @@
 /InstallDOD/obj/* 
 /InstallDOD/.vs/* 
 #/startDOD/lib/*
-
+*.pdb 
+/FolderSourceUpdate/InstallDOD.exe.config 
+/FolderSourceUpdate/Interop.IWshRuntimeLibrary.dll 

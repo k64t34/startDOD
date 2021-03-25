@@ -53,7 +53,7 @@
             this.label8.Location = new System.Drawing.Point(47, 646);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(56, 18);
+            this.label8.Size = new System.Drawing.Size(70, 23);
             this.label8.TabIndex = 12;
             this.label8.Text = "ВЫХОД";
             this.label8.Click += new System.EventHandler(this.label8_Click);
@@ -66,7 +66,7 @@
             this.label7.Location = new System.Drawing.Point(47, 608);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(87, 18);
+            this.label7.Size = new System.Drawing.Size(110, 23);
             this.label7.TabIndex = 13;
             this.label7.Text = "НАСТРОЙКИ";
             // 
@@ -78,7 +78,7 @@
             this.label6.Location = new System.Drawing.Point(47, 571);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(100, 18);
+            this.label6.Size = new System.Drawing.Size(127, 23);
             this.label6.TabIndex = 14;
             this.label6.Text = "ДОСТИЖЕНИЯ";
             // 
@@ -90,7 +90,7 @@
             this.label5.Location = new System.Drawing.Point(47, 535);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(162, 18);
+            this.label5.Size = new System.Drawing.Size(210, 23);
             this.label5.TabIndex = 15;
             this.label5.Text = "СООБЩИТЕ ОБ ОШИБКЕ";
             // 
@@ -102,7 +102,7 @@
             this.label4.Location = new System.Drawing.Point(47, 499);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(115, 18);
+            this.label4.Size = new System.Drawing.Size(149, 23);
             this.label4.TabIndex = 16;
             this.label4.Text = "СОЗДАТЬ СЕРВЕР";
             // 
@@ -114,7 +114,7 @@
             this.label3.Location = new System.Drawing.Point(47, 461);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(114, 18);
+            this.label3.Size = new System.Drawing.Size(145, 23);
             this.label3.TabIndex = 11;
             this.label3.Text = "НАЙТИ СЕРВЕРЫ";
             // 
@@ -126,9 +126,9 @@
             this.label_CE.Font = new System.Drawing.Font("Calibri", 11.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label_CE.ForeColor = System.Drawing.Color.Silver;
             this.label_CE.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.label_CE.Location = new System.Drawing.Point(872, 10);
+            this.label_CE.Location = new System.Drawing.Point(819, 10);
             this.label_CE.Name = "label_CE";
-            this.label_CE.Size = new System.Drawing.Size(190, 18);
+            this.label_CE.Size = new System.Drawing.Size(243, 23);
             this.label_CE.TabIndex = 17;
             this.label_CE.Text = "          Корпоративная версия";
             // 
@@ -161,7 +161,7 @@
             this.button_cmd.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button_cmd.Location = new System.Drawing.Point(673, 582);
             this.button_cmd.Name = "button_cmd";
-            this.button_cmd.Size = new System.Drawing.Size(90, 28);
+            this.button_cmd.Size = new System.Drawing.Size(112, 33);
             this.button_cmd.TabIndex = 2;
             this.button_cmd.Text = "Выполнить";
             this.button_cmd.UseVisualStyleBackColor = true;
@@ -193,7 +193,7 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
             this.BackgroundImage = global::startDOD.Resource1.bg;
