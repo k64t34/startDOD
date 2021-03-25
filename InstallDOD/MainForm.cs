@@ -14,6 +14,8 @@ using System.IO;
 using System.Diagnostics;
 //using System.Runtime.InteropServices;
 using IWshRuntimeLibrary;
+using System.Reflection;
+using System.Security.Permissions;
 
 namespace InstallDOD
 {
@@ -57,14 +59,16 @@ namespace InstallDOD
 		}
 		void MainFormLoad(object sender, EventArgs e)
 		{
-            /*TODO: Устанить мерцание
+			label_CE.Text += " "+ Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+			/*TODO: Устранить мерцание
              * http://qaru.site/questions/108054/how-to-stop-flickering-c-winforms
             this.SetStyle(
                 System.Windows.Forms.ControlStyles.UserPaint |
                 System.Windows.Forms.ControlStyles.AllPaintingInWmPaint |
                 System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer,
                 true);*/
-            panel_Folder.BackColor=Color.FromArgb(200, 128, 128, 128);			
+			panel_Folder.BackColor=Color.FromArgb(200, 128, 128, 128);			
 			comboBox_Disks.Items.Clear();
 			DriveInfo[] allDrives = DriveInfo.GetDrives();//https://docs.microsoft.com/ru-ru/dotnet/api/system.io.driveinfo.getdrives?view=netframework-4.7.2
 			foreach (DriveInfo d in allDrives)
@@ -194,6 +198,8 @@ namespace InstallDOD
             }
             catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при подготовке конфигурации стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }            
             this.Close();
-		}       
+		}
+
+        
     }
 }
