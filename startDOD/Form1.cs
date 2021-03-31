@@ -10,13 +10,17 @@ using System.Text;
 //using System.Data.Common;
 //using System.Data.SQLite;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace startDOD
 {
     public partial class Form1 : Form
     {
-        #region Global var & const
+        #region Global vars & consts        
+        static startDOD.Form1 THIS;
+        public delegate void delegateWriteText(String Text);
+        delegateWriteText AppendText;
         const string _CR = "\r";
         const string _CRLF = "\r\n";
         const string _TAB = "\t";
@@ -46,165 +50,184 @@ namespace startDOD
             label_Console_cmd.BackColor = Color.FromArgb(100, 48, 48, 48);
             panel_Console.Visible = true;
             #endregion
-
             textBox_Console.AppendText("Рабочая папка " + workFolder + Environment.NewLine);
-            string iniFile = workFolder + RunMODTitle + ".log";//	iniFile = workFolder + iniFile;
+            AppendText = new delegateWriteText(ConsoleWrite);
+            readConfig();            
+        }
+        static void ConsoleWrite(string message)
+        {
+            if (THIS.textBox_Console.InvokeRequired)
+            {
+                THIS.textBox_Console.BeginInvoke(new Action<string>((s) => {
+                    THIS.textBox_Console.AppendText(message);                    
+                }), message);
 
-            if (!File.Exists(iniFile)) textBox_Console.AppendText("Файл конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine);
+            }
             else
             {
-                textBox_Console.AppendText("Чтение файла конфигурации " + iniFile + Environment.NewLine);
-                using (StreamReader sINI = new StreamReader(iniFile))
+                THIS.textBox_Console.AppendText(message);                
+            }
+        }
+        async void readConfig()
+        {
+            await Task.Run(() =>
+            {
+            string iniFile = workFolder + RunMODTitle + ".log";//	iniFile = workFolder + iniFile;
+                if (!File.Exists(iniFile)) THIS.BeginInvoke(AppendText,"Файл конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine);
+                else
                 {
-                    string INIline;
-                    int StartLogLine = 0;
-                    List<ConfigLine> ClientconfigLine = new List<ConfigLine>();
-                    //Make ClientconfigLine array
-                    while ((INIline = sINI.ReadLine()) != null)
+                    textBox_Console.AppendText("Чтение файла конфигурации " + iniFile + Environment.NewLine);
+                    using (StreamReader sINI = new StreamReader(iniFile))
                     {
-                        StartLogLine++;
-                        INIline = INIline.Trim();
-                        if (INIline.Length == 0) continue;
-                        if (INIline.StartsWith("#")) continue;
-                        ClientconfigLine.Add(new ConfigLine(INIline));
-
-                        if (ClientconfigLine.Last().Command == ConfigLineCommand.FolderSourceUpdate) { updateFolder = ClientconfigLine.Last().File; }
-                        else if (ClientconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)
+                        string INIline;
+                        int StartLogLine = 0;
+                        List<ConfigLine> ClientconfigLine = new List<ConfigLine>();
+                        //Make ClientconfigLine array
+                        while ((INIline = sINI.ReadLine()) != null)
                         {
-                            textBox_Console.AppendText("Ошибка! Нераспознанная команда: " + INIline + _CRLF);
-                            ClientconfigLine.Remove(ClientconfigLine.Last());
+                            StartLogLine++;
+                            INIline = INIline.Trim();
+                            if (INIline.Length == 0) continue;
+                            if (INIline.StartsWith("#")) continue;
+                            ClientconfigLine.Add(new ConfigLine(INIline));
+
+                            if (ClientconfigLine.Last().Command == ConfigLineCommand.FolderSourceUpdate) { updateFolder = ClientconfigLine.Last().File; }
+                            else if (ClientconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)
+                            {
+                                textBox_Console.AppendText("Ошибка! Нераспознанная команда: " + INIline + _CRLF);
+                                ClientconfigLine.Remove(ClientconfigLine.Last());
+                            }
                         }
-                    }
-                    if (updateFolder == null) textBox_Console.AppendText("Файла конфигурации не содержить ссылку на папку обновлений" + Environment.NewLine);
-                    else
-                    {
-                        if (!updateFolder.EndsWith("\\")) updateFolder += "\\";
-                        updateFolder += "update\\";
-                        if (!Directory.Exists(updateFolder)) textBox_Console.AppendText("Указанная папка обновлений не найдена " + updateFolder + Environment.NewLine);
+                        if (updateFolder == null) textBox_Console.AppendText("Файла конфигурации не содержить ссылку на папку обновлений" + Environment.NewLine);
                         else
                         {
-                            string updateFile = updateFolder + "update.ini";
-                            if (!File.Exists(updateFile)) textBox_Console.AppendText("Файл обновлений не найден " + updateFile + Environment.NewLine);
+                            if (!updateFolder.EndsWith("\\")) updateFolder += "\\";
+                            updateFolder += "update\\";
+                            if (!Directory.Exists(updateFolder)) textBox_Console.AppendText("Указанная папка обновлений не найдена " + updateFolder + Environment.NewLine);
                             else
                             {
-                                textBox_Console.AppendText("Чтение файла обновлений " + updateFile + Environment.NewLine);
-                                using (StreamReader sUPDATE = new StreamReader(updateFile))
+                                string updateFile = updateFolder + "update.ini";
+                                if (!File.Exists(updateFile)) textBox_Console.AppendText("Файл обновлений не найден " + updateFile + Environment.NewLine);
+                                else
                                 {
-                                    List<ConfigLine> ServerconfigLine = new List<ConfigLine>();
-                                    string UPDATEline;
-                                    string[] UpdateLineWords;
-                                    string[] INILineWords;
-                                    //StreamWriter swINI = File.AppendText(iniFile);
-                                    //swINI.WriteLine();
-                                    //System.Environment.SetEnvironmentVariable("FolderInstall", workFolder, EnvironmentVariableTarget.User);
-                                    //TODO:Если на сервере изменилась ссылка на папку, то необходимо заново перечитать новую папку
-                                    while ((UPDATEline = sUPDATE.ReadLine()) != null)
+                                    textBox_Console.AppendText("Чтение файла обновлений " + updateFile + Environment.NewLine);
+                                    using (StreamReader sUPDATE = new StreamReader(updateFile))
                                     {
-                                        UPDATEline = UPDATEline.TrimStart();
-                                        if (UPDATEline.StartsWith("#")) continue;// skip comment
-                                        if (UPDATEline.Length == 0) continue; // skip empty line
+                                        List<ConfigLine> ServerconfigLine = new List<ConfigLine>();
+                                        string UPDATEline;
+                                        string[] UpdateLineWords;
+                                        string[] INILineWords;
+                                        //StreamWriter swINI = File.AppendText(iniFile);
+                                        //swINI.WriteLine();
+                                        //System.Environment.SetEnvironmentVariable("FolderInstall", workFolder, EnvironmentVariableTarget.User);
+                                        //TODO:Если на сервере изменилась ссылка на папку, то необходимо заново перечитать новую папку
+                                        while ((UPDATEline = sUPDATE.ReadLine()) != null)
                                         {
-                                            ServerconfigLine.Add(new ConfigLine(UPDATEline, 1));
-                                            if (ServerconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)
+                                            UPDATEline = UPDATEline.TrimStart();
+                                            if (UPDATEline.StartsWith("#")) continue;// skip comment
+                                            if (UPDATEline.Length == 0) continue; // skip empty line
                                             {
-                                                textBox_Console.AppendText("Ошибка! Нераспознанная команда: " + UPDATEline + _CRLF);
-                                                ServerconfigLine.Remove(ServerconfigLine.Last());
-                                                continue;
-                                            }
-#if DEBUG
-                                            textBox_Console.AppendText(UPDATEline + _CRLF);
-#endif
-                                            textBox_Console.AppendText(ServerconfigLine.Last().File);
-                                            bool needUpdate = true;
-                                            if (!ClientconfigLine.Exists(x => x.File.Contains(ServerconfigLine.Last().File))) needUpdate = true;
-                                            else { needUpdate = false; }
-                                            //check this update in client INI file
-
-                                            //int LogLineCounter = 0;
-                                            //bool needUpdate = true;
-                                            //while ((INIline = sINI.ReadLine()) != null)
-                                            //{
-                                            //    LogLineCounter++;
-                                            //    if (LogLineCounter < StartLogLine) continue;                                                
-                                            //    INIline = INIline.Trim();
-                                            //    if (INIline.Length == 0) continue;
-                                            //    if (INIline.StartsWith("#")) continue;
-                                            //    INIline = INIline.TrimEnd();
-                                            //    INILineWords = INIline.Split(separatingChars, StringSplitOptions.RemoveEmptyEntries);
-                                            //    if (INILineWords[0] == UpdateLineWords[0])
-                                            //    {
-                                            //        if (INILineWords.Length>=2)
-                                            //        {                                                        
-                                            //            if (INILineWords[1] == UpdateLineWords[1])
-                                            //                needUpdate = false;
-                                            //         }                                                        
-                                            //    }       
-                                            //}
-                                            if (!needUpdate) { textBox_Console.AppendText(" = " + ServerconfigLine.Last().Version + _CRLF); }
-                                            else
-                                            {
-                                                textBox_Console.AppendText(" update to " + ServerconfigLine.Last().Version + _CRLF);
-                                                if (ServerconfigLine.Last().Command== ConfigLineCommand.UNZIP)
+                                                ServerconfigLine.Add(new ConfigLine(UPDATEline, 1));
+                                                if (ServerconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)
                                                 {
-                                                    if (UNZIP())
+                                                    textBox_Console.AppendText("Ошибка! Нераспознанная команда: " + UPDATEline + _CRLF);
+                                                    ServerconfigLine.Remove(ServerconfigLine.Last());
+                                                    continue;
+                                                }
+#if DEBUG
+                                                textBox_Console.AppendText(UPDATEline + _CRLF);
+#endif
+                                                textBox_Console.AppendText(ServerconfigLine.Last().File);
+                                                bool needUpdate = true;
+                                                if (!ClientconfigLine.Exists(x => x.File.Contains(ServerconfigLine.Last().File))) needUpdate = true;
+                                                else { needUpdate = false; }
+                                                //check this update in client INI file
+
+                                                //int LogLineCounter = 0;
+                                                //bool needUpdate = true;
+                                                //while ((INIline = sINI.ReadLine()) != null)
+                                                //{
+                                                //    LogLineCounter++;
+                                                //    if (LogLineCounter < StartLogLine) continue;                                                
+                                                //    INIline = INIline.Trim();
+                                                //    if (INIline.Length == 0) continue;
+                                                //    if (INIline.StartsWith("#")) continue;
+                                                //    INIline = INIline.TrimEnd();
+                                                //    INILineWords = INIline.Split(separatingChars, StringSplitOptions.RemoveEmptyEntries);
+                                                //    if (INILineWords[0] == UpdateLineWords[0])
+                                                //    {
+                                                //        if (INILineWords.Length>=2)
+                                                //        {                                                        
+                                                //            if (INILineWords[1] == UpdateLineWords[1])
+                                                //                needUpdate = false;
+                                                //         }                                                        
+                                                //    }       
+                                                //}
+                                                if (!needUpdate) { textBox_Console.AppendText(" = " + ServerconfigLine.Last().Version + _CRLF); }
+                                                else
+                                                {
+                                                    textBox_Console.AppendText(" update to " + ServerconfigLine.Last().Version + _CRLF);
+                                                    if (ServerconfigLine.Last().Command == ConfigLineCommand.UNZIP)
                                                     {
+                                                        if (UNZIP())
+                                                        {
+                                                        }
+
                                                     }
 
+
+                                                    //    UpdateLineWords[2] = UpdateLineWords[2].ToUpper();
+                                                    //    textBox_Console.AppendText(" updating... " + UpdateLineWords[2] +" " );
+                                                    //    if (String.Equals(UpdateLineWords[2], "UNZIP"))
+                                                    //    {
+                                                    //        if (UpdateLineWords.Length < 4)
+                                                    //            textBox_Console.AppendText(" Файл архива не указан" + Environment.NewLine);
+                                                    //        else
+                                                    //        if (UNZIP(UpdateLineWords[3]))
+                                                    //        {
+                                                    //            textBox_Console.AppendText(" OK" + Environment.NewLine);
+                                                    //            //TODO: Записать в MOD.ini успех обновления
+                                                    //            //https://docs.microsoft.com/ru-ru/dotnet/api/system.io.filestream?view=netframework-4.8
+                                                    //            //sINI.Close();
+                                                    //            //StreamWriter swINI = File.AppendText(iniFile);
+                                                    //            //swINI.WriteLine(UpdateLineWords[0]+" "+ UpdateLineWords[1]);
+                                                    //            //swINI.Close();
+                                                    //            //sINI.open(iniFile);
+                                                    //        }
+                                                    //        else { textBox_Console.AppendText(" Ошибка" + Environment.NewLine); }
+                                                    //    }
+                                                    //    else if (String.Equals(UpdateLineWords[2], "REG"))
+                                                    //    {
+                                                    //        if (UpdateLineWords.Length < 4)
+                                                    //            textBox_Console.AppendText(" Файл реестра не указан" + Environment.NewLine);
+                                                    //        else
+                                                    //        if (REGimport(UpdateLineWords[3]))
+                                                    //        {
+                                                    //            textBox_Console.AppendText(" OK" + Environment.NewLine);
+                                                    //            //TODO: Записать в MOD.ini успех обновления
+                                                    //        }
+                                                    //    }
+                                                    //    else
+                                                    //        textBox_Console.AppendText(" Invalid command." + Environment.NewLine);
                                                 }
-
-
-                                                //    UpdateLineWords[2] = UpdateLineWords[2].ToUpper();
-                                                //    textBox_Console.AppendText(" updating... " + UpdateLineWords[2] +" " );
-                                                //    if (String.Equals(UpdateLineWords[2], "UNZIP"))
-                                                //    {
-                                                //        if (UpdateLineWords.Length < 4)
-                                                //            textBox_Console.AppendText(" Файл архива не указан" + Environment.NewLine);
-                                                //        else
-                                                //        if (UNZIP(UpdateLineWords[3]))
-                                                //        {
-                                                //            textBox_Console.AppendText(" OK" + Environment.NewLine);
-                                                //            //TODO: Записать в MOD.ini успех обновления
-                                                //            //https://docs.microsoft.com/ru-ru/dotnet/api/system.io.filestream?view=netframework-4.8
-                                                //            //sINI.Close();
-                                                //            //StreamWriter swINI = File.AppendText(iniFile);
-                                                //            //swINI.WriteLine(UpdateLineWords[0]+" "+ UpdateLineWords[1]);
-                                                //            //swINI.Close();
-                                                //            //sINI.open(iniFile);
-                                                //        }
-                                                //        else { textBox_Console.AppendText(" Ошибка" + Environment.NewLine); }
-                                                //    }
-                                                //    else if (String.Equals(UpdateLineWords[2], "REG"))
-                                                //    {
-                                                //        if (UpdateLineWords.Length < 4)
-                                                //            textBox_Console.AppendText(" Файл реестра не указан" + Environment.NewLine);
-                                                //        else
-                                                //        if (REGimport(UpdateLineWords[3]))
-                                                //        {
-                                                //            textBox_Console.AppendText(" OK" + Environment.NewLine);
-                                                //            //TODO: Записать в MOD.ini успех обновления
-                                                //        }
-                                                //    }
-                                                //    else
-                                                //        textBox_Console.AppendText(" Invalid command." + Environment.NewLine);
                                             }
                                         }
+                                        sINI.Close();
                                     }
-                                    sINI.Close();
                                 }
                             }
                         }
                     }
-                }
-                textBox_Console.AppendText("Запуск " + RunMOD + Environment.NewLine);
+                    textBox_Console.AppendText("Запуск " + RunMOD + Environment.NewLine);
 #if !DEBUG
                 LoadRevEmu();
                 System.Threading.Thread.Sleep(5000);
                 this.Close();
 #endif
+                }
+            });        
 
-
-            }
-        }
+        }    
         private void LoadRevEmu()
         {
         }
