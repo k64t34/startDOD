@@ -1,40 +1,39 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 //using System.ComponentModel;
 //using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
-using System.IO;
-using System.Diagnostics;
 //using System.Data.Common;
 //using System.Data.SQLite;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace startDOD
 {
     public partial class Form1 : Form
     {
+        #region Global var & const
         const string _CR = "\r";
         const string _CRLF = "\r\n";
         const string _TAB = "\t";
         string workFolder = AppDomain.CurrentDomain.BaseDirectory;
         string updateFolder;
         const string RunMOD = "dod";
-		const string RunMODTitle = "День Победы";
+        const string RunMODTitle = "День Победы";
         const string revLoader = "revLoader.exe";
         char[] separatingChars = { ' ', '\t' };
-        SynchronizationContext _syncContext;       
-        public Form1()
-        {
-            InitializeComponent();
-        }
-        private void label8_Click(object sender, EventArgs e){this.Close();}
+        SynchronizationContext _syncContext;
+        #endregion
+        public Form1() { InitializeComponent(); }
+        private void label8_Click(object sender, EventArgs e) { this.Close(); }
         private void Form1_Load(object sender, EventArgs e)
         {
             _syncContext = SynchronizationContext.Current;
-            //Tune form control
+            #region Tune form control
             panel_Console.Width = this.Width - panel_Console.Left - panel_Console.Margin.All;
             panel_Console.Height = this.Height - panel_Console.Top - panel_Console.Margin.All - panel_Console.Margin.All;
             label_Console_cmd.Left = panel_Console.Padding.All;
@@ -46,19 +45,21 @@ namespace startDOD
             panel_Console.BackColor = Color.FromArgb(200, 128, 128, 128);
             label_Console_cmd.BackColor = Color.FromArgb(100, 48, 48, 48);
             panel_Console.Visible = true;
+            #endregion
 
             textBox_Console.AppendText("Рабочая папка " + workFolder + Environment.NewLine);
-            string iniFile = workFolder+ RunMODTitle + ".log";//	iniFile = workFolder + iniFile;
+            string iniFile = workFolder + RunMODTitle + ".log";//	iniFile = workFolder + iniFile;
 
             if (!File.Exists(iniFile)) textBox_Console.AppendText("Файл конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine);
             else
-            {                
+            {
                 textBox_Console.AppendText("Чтение файла конфигурации " + iniFile + Environment.NewLine);
                 using (StreamReader sINI = new StreamReader(iniFile))
                 {
                     string INIline;
-                    int StartLogLine=0;                    
+                    int StartLogLine = 0;
                     List<ConfigLine> ClientconfigLine = new List<ConfigLine>();
+                    //Make ClientconfigLine array
                     while ((INIline = sINI.ReadLine()) != null)
                     {
                         StartLogLine++;
@@ -66,13 +67,13 @@ namespace startDOD
                         if (INIline.Length == 0) continue;
                         if (INIline.StartsWith("#")) continue;
                         ClientconfigLine.Add(new ConfigLine(INIline));
-                        
-                        if (ClientconfigLine.Last().Command == ConfigLineCommand.FolderSourceUpdate){updateFolder = ClientconfigLine.Last().File;}
-                        else if (ClientconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)  
-                            {
+
+                        if (ClientconfigLine.Last().Command == ConfigLineCommand.FolderSourceUpdate) { updateFolder = ClientconfigLine.Last().File; }
+                        else if (ClientconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)
+                        {
                             textBox_Console.AppendText("Ошибка! Нераспознанная команда: " + INIline + _CRLF);
-                            ClientconfigLine.Remove(ClientconfigLine.Last()); 
-                            }
+                            ClientconfigLine.Remove(ClientconfigLine.Last());
+                        }
                     }
                     if (updateFolder == null) textBox_Console.AppendText("Файла конфигурации не содержить ссылку на папку обновлений" + Environment.NewLine);
                     else
@@ -81,8 +82,8 @@ namespace startDOD
                         updateFolder += "update\\";
                         if (!Directory.Exists(updateFolder)) textBox_Console.AppendText("Указанная папка обновлений не найдена " + updateFolder + Environment.NewLine);
                         else
-                        {                            
-                            string updateFile = updateFolder + "update.ini";                            
+                        {
+                            string updateFile = updateFolder + "update.ini";
                             if (!File.Exists(updateFile)) textBox_Console.AppendText("Файл обновлений не найден " + updateFile + Environment.NewLine);
                             else
                             {
@@ -104,15 +105,15 @@ namespace startDOD
                                         if (UPDATEline.Length == 0) continue; // skip empty line
                                         {
                                             ServerconfigLine.Add(new ConfigLine(UPDATEline, 1));
-                                            if (ServerconfigLine.Last().Command == ConfigLineCommand.UNKNOWN) 
-                                                {
-                                                textBox_Console.AppendText("Ошибка! Нераспознанная команда: " + UPDATEline+ _CRLF);
+                                            if (ServerconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)
+                                            {
+                                                textBox_Console.AppendText("Ошибка! Нераспознанная команда: " + UPDATEline + _CRLF);
                                                 ServerconfigLine.Remove(ServerconfigLine.Last());
                                                 continue;
-                                                }
-                                            #if DEBUG
+                                            }
+#if DEBUG
                                             textBox_Console.AppendText(UPDATEline + _CRLF);
-                                            #endif
+#endif
                                             textBox_Console.AppendText(ServerconfigLine.Last().File);
                                             bool needUpdate = true;
                                             if (!ClientconfigLine.Exists(x => x.File.Contains(ServerconfigLine.Last().File))) needUpdate = true;
@@ -139,12 +140,15 @@ namespace startDOD
                                             //         }                                                        
                                             //    }       
                                             //}
-                                            if (!needUpdate){textBox_Console.AppendText(" = " + ServerconfigLine.Last().Version + _CRLF);}
+                                            if (!needUpdate) { textBox_Console.AppendText(" = " + ServerconfigLine.Last().Version + _CRLF); }
                                             else
                                             {
                                                 textBox_Console.AppendText(" update to " + ServerconfigLine.Last().Version + _CRLF);
-                                                if (ServerconfigLine.Last().Exec())
+                                                if (ServerconfigLine.Last().Command== ConfigLineCommand.UNZIP)
                                                 {
+                                                    if (UNZIP())
+                                                    {
+                                                    }
 
                                                 }
 
@@ -182,7 +186,7 @@ namespace startDOD
                                                 //    }
                                                 //    else
                                                 //        textBox_Console.AppendText(" Invalid command." + Environment.NewLine);
-                                            }                                           
+                                            }
                                         }
                                     }
                                     sINI.Close();
@@ -192,30 +196,30 @@ namespace startDOD
                     }
                 }
                 textBox_Console.AppendText("Запуск " + RunMOD + Environment.NewLine);
-                #if !DEBUG
+#if !DEBUG
                 LoadRevEmu();
                 System.Threading.Thread.Sleep(5000);
                 this.Close();
-                #endif
+#endif
 
 
             }
         }
         private void LoadRevEmu()
-            {
-            }
+        {
+        }
         private void CFG(string cmdFile, string Param, string Value)
-            {
-            textBox_Console.AppendText("Конфигурация" + cmdFile+" "+Param+" "+Value+Environment.NewLine);
+        {
+            textBox_Console.AppendText("Конфигурация" + cmdFile + " " + Param + " " + Value + Environment.NewLine);
         }
         private bool UNZIP(string cmdFile)
         {
             bool UNZIP_return = true;
             textBox_Console.AppendText("Распаковка " + cmdFile);
             cmdFile = updateFolder + cmdFile;
-            if (!File.Exists(cmdFile)) { textBox_Console.AppendText(" Архив " + cmdFile + " не найден ");return (false); }
+            if (!File.Exists(cmdFile)) { textBox_Console.AppendText(" Архив " + cmdFile + " не найден "); return (false); }
             string UNZIPer;
-            UNZIPer = Environment.GetEnvironmentVariable("ProgramFiles")+ "\\WinRAR\\Rar.exe";
+            UNZIPer = Environment.GetEnvironmentVariable("ProgramFiles") + "\\WinRAR\\Rar.exe";
             if (!File.Exists(UNZIPer))
             {
                 UNZIPer = Environment.GetEnvironmentVariable("ProgramFiles(x86)") + "\\WinRAR\\Rar.exe";
@@ -225,8 +229,8 @@ namespace startDOD
                     if (!File.Exists(UNZIPer)) { textBox_Console.AppendText(" Не найден распаковщик " + UNZIPer); return (false); }
                 }
             }
-            int RUN_return=RUN(UNZIPer, "x -y -o+ -sca -idcd  \"" + cmdFile + "\" \"" + workFolder + "\"");
-            if (RUN_return == -1) { textBox_Console.AppendText(" Ошибка при запуске распаковщика"); UNZIP_return=false; }
+            int RUN_return = RUN(UNZIPer, "x -y -o+ -sca -idcd  \"" + cmdFile + "\" \"" + workFolder + "\"");
+            if (RUN_return == -1) { textBox_Console.AppendText(" Ошибка при запуске распаковщика"); UNZIP_return = false; }
             else if (RUN_return > 0) textBox_Console.AppendText(" Распаковщик завершил работу с кодом " + RUN_return + Environment.NewLine);
             return (UNZIP_return);
         }
@@ -245,7 +249,7 @@ namespace startDOD
             try
             {
                 using (Process myProcess = new Process())
-                {                    
+                {
                     myProcess.StartInfo.UseShellExecute = false;
                     myProcess.StartInfo.FileName = FileName;
                     myProcess.StartInfo.Arguments = Arguments;
@@ -273,15 +277,21 @@ namespace startDOD
                         }
                     }
                     if (so.Length > BufLine) textBox_Console.AppendText(so.ToString().Substring(BufLine));
-                    RUN_return = myProcess.ExitCode;                    
+                    RUN_return = myProcess.ExitCode;
                     myProcess.Dispose();
                 }
             }
             catch (Exception ex)
             {
-                RUN_return=-1;
+                RUN_return = -1;
             }
             return (RUN_return);
+        }
+        bool UNZIP()
+        {
+            bool result = false;
+
+            return result;
         }
     }
 }

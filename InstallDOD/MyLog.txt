@@ -1,0 +1,13 @@
+Проблема с выводом потока из консоли в форму
+
+Реализация dll
+https://sourceforge.net/p/consolewidget/code/HEAD/tarball
+
+Как перенаправить вывод собственной консоли(Console.Write) в свой TextBox в C#
+http://devnuances.com/c_sharp/kak-perenapravit-vyivod-konsoli-v-textbox-v-c-sharp/
+
+How to redirect the Console’s output to a TextBox in C#
+https://saezndaree.wordpress.com/2009/03/29/how-to-redirect-the-consoles-output-to-a-textbox-in-c/
+
+Process.StandardOutput Property
+https://docs.microsoft.com/ru-ru/dotnet/api/system.diagnostics.process.standardoutput?view=netframework-4.7.2

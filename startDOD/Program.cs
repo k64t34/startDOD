@@ -45,7 +45,9 @@ namespace startDOD
                 if (String.Compare(Part[1 - this.Type], "FolderSourceUpdate", true) == 0) { this.Command = ConfigLineCommand.FolderSourceUpdate; this.File = Part[2 - this.Type]; }
                 else
                 {
-                    if (String.Compare(Part[1 - this.Type], "UNZIP", true) == 0) this.Command = ConfigLineCommand.UNZIP;
+                    if (String.Compare(Part[1 - this.Type], "UNZIP",            true) == 0) this.Command = ConfigLineCommand.UNZIP;
+                    if (String.Compare(Part[1 - this.Type], "REG",              true) == 0) this.Command = ConfigLineCommand.REG;
+                    if (String.Compare(Part[1 - this.Type], "EDIT_CLIENT_FILE", true) == 0) this.Command = ConfigLineCommand.EDIT_CLIENT_FILE;
                     this.Version = Part[2 - this.Type];
                     this.File = Part[3 - this.Type];
                 }
@@ -54,11 +56,12 @@ namespace startDOD
                 //Debug.Write("\n\n");
             }
         }
-        public bool Exec()
-        {
-            bool result = false;
-            if (this.Command == ConfigLineCommand.UNZIP) ;
-            return result;
-        }
+        //public bool Exec()
+        //{
+        //    bool result = false;
+        //    if (this.Command == ConfigLineCommand.UNZIP) result = 
+        //            UNZIP();
+        //    return result;
+        //}
     }
 }
