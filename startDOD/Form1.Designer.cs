@@ -57,6 +57,8 @@
             this.label8.TabIndex = 12;
             this.label8.Text = "ВЫХОД";
             this.label8.Click += new System.EventHandler(this.label8_Click);
+            this.label8.MouseEnter += new System.EventHandler(this.label8_MouseEnter);
+            this.label8.MouseLeave += new System.EventHandler(this.label8_MouseLeave);
             // 
             // label7
             // 
