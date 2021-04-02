@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace startDOD
@@ -21,6 +22,8 @@ namespace startDOD
             Application.Run(new Form1());
         }
     }
+    
+
     enum ConfigLineCommand
     {
         UNKNOWN=0,
@@ -34,14 +37,17 @@ namespace startDOD
         public ConfigLineCommand Command = ConfigLineCommand.UNKNOWN;
         public String Version = String.Empty;
         public String File = String.Empty;
-        String[] Parameters;
+        //public bool Updated = false;
+        //public String[] Parameters;
         int Type = 0;//0-clinet;1-server
+        public String Date= String.Empty;
         public ConfigLine(String StringLine,int ConfigType=0)
         {
             this.Type = ConfigType;
             String[] Part = StringLine.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (Part.Length >= 3-this.Type)
             {
+                if (this.Type == 0) this.Date = Part[0];
                 if (String.Compare(Part[1 - this.Type], "FolderSourceUpdate", true) == 0) { this.Command = ConfigLineCommand.FolderSourceUpdate; this.File = Part[2 - this.Type]; }
                 else
                 {
