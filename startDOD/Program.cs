@@ -22,26 +22,30 @@ namespace startDOD
             Application.Run(new Form1());
         }
     }
-    
 
-    enum ConfigLineCommand
+    enum ConfigLineCommand:int
     {
-        UNKNOWN=0,
-        FolderSourceUpdate=1,
-        UNZIP =10,
-        REG=20,
-        EDIT_CLIENT_FILE=30        
+        UNKNOWN = 0,
+        FolderSourceUpdate = 1,
+        UNZIP = 2,
+        REG = 3,
+        EDIT_CLIENT_FILE = 4,
+        STARTER = 5
     }
+
+
     class ConfigLine
     {
-        public ConfigLineCommand Command = ConfigLineCommand.UNKNOWN;
+        //public ConfigLineCommand Command = ConfigLineCommand.UNKNOWN;
         public String Version = String.Empty;
         public String File = String.Empty;
         //public bool Updated = false;
         //public String[] Parameters;
         int Type = 0;//0-clinet;1-server
         public String Date= String.Empty;
-        public ConfigLine(String StringLine,int ConfigType=0)
+        public ConfigLineCommand Command;
+        int a = 0;
+        public ConfigLine (String StringLine,int ConfigType=0)
         {
             this.Type = ConfigType;
             String[] Part = StringLine.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
@@ -54,7 +58,10 @@ namespace startDOD
                     if (String.Compare(Part[1 - this.Type], "UNZIP",            true) == 0) this.Command = ConfigLineCommand.UNZIP;
                     if (String.Compare(Part[1 - this.Type], "REG",              true) == 0) this.Command = ConfigLineCommand.REG;
                     if (String.Compare(Part[1 - this.Type], "EDIT_CLIENT_FILE", true) == 0) this.Command = ConfigLineCommand.EDIT_CLIENT_FILE;
+                    //if (String.Compare(Part[1 - this.Type], "STARTER", true) == 0) this.Command = ConfigLineCommand.STARTER;
                     this.Version = Part[2 - this.Type];
+                    int[] ConfigLineCommandMinParameterCount = { 0, 3, 4, 4, 4, 3 };
+                    if (Part.Length >= ConfigLineCommandMinParameterCount[this.Command])
                     this.File = Part[3 - this.Type];
                 }
                 //foreach (string entry in Part)                    {

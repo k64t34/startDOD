@@ -15,10 +15,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace startDOD
-{
+{    
+
     public partial class Form1 : Form
     {
-        #region      
+        #region Update control from othe thread     
         //https://www.youtube.com/watch?v=9AIApJmbulY&t=196s
         public delegate void DelegateConsoleWrite(string Text);
         ThreadStart threadStartReadConfig;
@@ -28,15 +29,15 @@ namespace startDOD
         #region Global vars & consts
         //const string _CR = "\r";
         //const string _CRLF = "\r\n";
-        const string _TAB = "\t";
+        //const string _TAB = "\t";
         string workFolder = AppDomain.CurrentDomain.BaseDirectory;
         string updateFolder;
         const string RunMOD = "dod";
-        const string RunMODTitle = "День Победы";
+        const string RunMODTitle="День победы";
         const string revLoader = "revLoader.exe";
         string ProgUNZIP = "UnRAR.exe";
         char[] separatingChars = { ' ', '\t' };
-        SynchronizationContext _syncContext;
+        SynchronizationContext _syncContext;       
         #endregion
         public Form1() { InitializeComponent();
         }
@@ -58,6 +59,36 @@ namespace startDOD
             label_Console_cmd.BackColor = Color.FromArgb(100, 48, 48, 48);
             panel_Console.Visible = true;
             #endregion
+            #region 
+            //TODO:Is copy of this programm running
+            #endregion
+            #region Is old update file still exist  
+            string RunningProcess = Path.GetFileNameWithoutExtension(System.Environment.GetCommandLineArgs()[0]);
+            string UpdateFile = RunMODTitle + ".update.exe";
+            if (String.Compare(RunMODTitle, RunningProcess, true) == 0)
+            {                
+                if (File.Exists(UpdateFile))
+                {
+                    ;
+                }
+            }
+            else if (String.Compare(UpdateFile, RunningProcess, true) == 0)
+            {
+            }
+            else 
+            {
+                textBox_Console.AppendText("Запущенный процесс " + RunningProcess + ".exe нераспознан" + Environment.NewLine);
+                textBox_Console.AppendText("Попробуйте перезапустить " + RunningProcess + Environment.NewLine);
+                return;
+            }
+
+
+
+            if (Process.GetProcessesByName(UpdateFile).Length > 0)
+                {
+                    ;// Is running
+                }
+            #endregion
             _syncContext = SynchronizationContext.Current;
             textBox_Console.AppendText("Рабочая папка " + workFolder + Environment.NewLine);
 
@@ -67,22 +98,7 @@ namespace startDOD
             threadReadConfig = new Thread(threadStartReadConfig);
             threadReadConfig.Start();            
             #endregion            
-        }
-
-        //static void ConsoleWrite(string message)
-        //{
-        //    if (THIS.textBox_Console.InvokeRequired)
-        //    {
-        //        THIS.textBox_Console.BeginInvoke(new Action<string>((s) => {
-        //            THIS.textBox_Console.AppendText(message);                    
-        //        }), message);
-
-        //    }
-        //    else
-        //    {
-        //        THIS.textBox_Console.AppendText(message);                
-        //    }
-        //}
+        }                
         void readConfig()
         {
             string iniFile = workFolder + RunMODTitle + ".log";//	iniFile = workFolder + iniFile;
@@ -116,7 +132,7 @@ namespace startDOD
                 }
                 if (updateFolder == null)
                 {
-                    textBox_Console.AppendText("Файла конфигурации не содержить ссылку на папку обновлений" + Environment.NewLine);
+                    this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Файла конфигурации не содержить ссылку на папку обновлений" + Environment.NewLine);
                     return;
                 }
                 if (!updateFolder.EndsWith("\\")) updateFolder += "\\";
