@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -44,37 +45,56 @@ namespace startDOD
         int Type = 0;//0-clinet;1-server
         public String Date= String.Empty;
         public ConfigLineCommand Command;
-        int a = 0;
-        public ConfigLine (String StringLine,int ConfigType=0)
+        int MinParameterCount;
+        public ConfigLine(String StringLine, int ConfigType = 0)
         {
+            this.Command = ConfigLineCommand.UNKNOWN;
             this.Type = ConfigType;
             String[] Part = StringLine.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-            if (Part.Length >= 3-this.Type)
+            if (Part.Length < 2 - this.Type) { return; }
+            else
             {
-                if (this.Type == 0) this.Date = Part[0];
-                if (String.Compare(Part[1 - this.Type], "FolderSourceUpdate", true) == 0) { this.Command = ConfigLineCommand.FolderSourceUpdate; this.File = Part[2 - this.Type]; }
-                else
+                if (String.Compare(Part[1 - this.Type], "FolderSourceUpdate", true) == 0)
                 {
-                    if (String.Compare(Part[1 - this.Type], "UNZIP",            true) == 0) this.Command = ConfigLineCommand.UNZIP;
-                    if (String.Compare(Part[1 - this.Type], "REG",              true) == 0) this.Command = ConfigLineCommand.REG;
-                    if (String.Compare(Part[1 - this.Type], "EDIT_CLIENT_FILE", true) == 0) this.Command = ConfigLineCommand.EDIT_CLIENT_FILE;
-                    //if (String.Compare(Part[1 - this.Type], "STARTER", true) == 0) this.Command = ConfigLineCommand.STARTER;
-                    this.Version = Part[2 - this.Type];
-                    int[] ConfigLineCommandMinParameterCount = { 0, 3, 4, 4, 4, 3 };
-                    if (Part.Length >= ConfigLineCommandMinParameterCount[this.Command])
-                    this.File = Part[3 - this.Type];
+                    MinParameterCount = 3 - this.Type;
+                    if (Part.Length < MinParameterCount) { return; }
+                    this.Command = ConfigLineCommand.FolderSourceUpdate;
+                    this.File = Part[2 - this.Type];
                 }
+                else if (String.Compare(Part[1 - this.Type], "UNZIP", true) == 0)
+                {
+                    MinParameterCount = 4 - this.Type;
+                    if (Part.Length < MinParameterCount) return;
+                    this.Command = ConfigLineCommand.UNZIP;
+                    this.File = Part[3 - this.Type];
+                    this.Version = Part[2 - this.Type];
+                }
+                else if (String.Compare(Part[1 - this.Type], "REG", true) == 0)
+                {
+                    MinParameterCount = 4 - this.Type;
+                    if (Part.Length < MinParameterCount) return;
+                    this.Command = ConfigLineCommand.REG;
+                    this.File = Part[3 - this.Type];
+                    this.Version = Part[2 - this.Type];
+                }
+                else if (String.Compare(Part[1 - this.Type], "STARTER", true) == 0)
+                {
+                    MinParameterCount = 3 - this.Type;
+                    if (Part.Length < MinParameterCount) return;
+                    this.Command = ConfigLineCommand.STARTER;                    
+                    this.Version = Part[2 - this.Type];
+                    this.File = Path.GetFileName(System.Environment.GetCommandLineArgs()[0]);
+                }
+                //else if (String.Compare(Part[1 - this.Type], "EDIT_CLIENT_FILE", true) == 0) this.Command = ConfigLineCommand.EDIT_CLIENT_FILE;
+                else { return; }
+
+                if (this.Type == 0) this.Date = Part[0];
+                //TODO: Parse other command
                 //foreach (string entry in Part)                    {
                 //        Debug.Write($"<{entry}>");                    }
                 //Debug.Write("\n\n");
             }
         }
-        //public bool Exec()
-        //{
-        //    bool result = false;
-        //    if (this.Command == ConfigLineCommand.UNZIP) result = 
-        //            UNZIP();
-        //    return result;
-        //}
+
     }
 }

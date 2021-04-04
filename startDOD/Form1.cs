@@ -189,6 +189,8 @@ namespace startDOD
                                 this.textBox_Console.BeginInvoke(delegateConsoleWrite, " update to " + ServerconfigLine.Last().Version + Environment.NewLine);
                                 if (ServerconfigLine.Last().Command == ConfigLineCommand.UNZIP) needUpdate = UNZIP(ServerconfigLine.Last().File);
                                 else if (ServerconfigLine.Last().Command == ConfigLineCommand.REG) needUpdate = REGimport(ServerconfigLine.Last().File);
+                                else if (ServerconfigLine.Last().Command == ConfigLineCommand.STARTER) needUpdate = GetNewStarter();
+                                else needUpdate = false;
                                 if (needUpdate)
                                 {
                                     if (ClientLineIndex == -1)ClientconfigLine.Add(ServerconfigLine.Last());       
@@ -335,6 +337,25 @@ namespace startDOD
             Encoding w1251 = Encoding.GetEncoding("Windows-1251");            
             Encoding cp866 = Encoding.GetEncoding("cp866");
             return  cp866.GetString(w1251.GetBytes(line));
+        }
+        bool GetNewStarter()
+        {
+            bool result = false;
+            try 
+            {
+                File.Copy(updateFolder+ RunMODTitle+".exe", workFolder+RunMODTitle + ".update.exe",true);
+                //run update
+                Process.Start(workFolder + RunMODTitle + ".update.exe");
+                //Application.Exit();
+                //Process.GetCurrentProcess().Kill();
+                Environment.Exit(0);
+                //System.Environment.Exit(0);
+            }
+            catch (Exception e) 
+            {
+                this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Ошибка во время обновления! " + e.Message + Environment.NewLine);
+            }
+            return result;
         }
     }
 }
