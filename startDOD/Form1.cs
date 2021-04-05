@@ -105,12 +105,55 @@ namespace startDOD
                 }
                 catch (Exception e1) { textBox_Console.AppendText("Не удалось остановить процесс " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }
                 try { File.Copy(UpdateFile, workFolder + RunMODTitle + ".exe",true); }
-                catch (Exception e1) { textBox_Console.AppendText("Не удалось удалить файл обновлений " + UpdateFile + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }
-                //TODO:Обновить запись в *.log 1234-5678 STARTER version
+                catch (Exception e1) { textBox_Console.AppendText("Не удалось удалить старую версию " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }                
+                string iniFile = workFolder + RunMODTitle + ".log";
+                if (!File.Exists(iniFile)) { this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Файл конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine); Environment.Exit(0); }
+                bool needUpdate = true;
+                List<ConfigLine> ClientconfigLine = new List<ConfigLine>();
+                using (StreamReader sClientINI = new StreamReader(iniFile))
+                {                    
+                    string INIline;
+                    int StartLogLine = 0;                    
+                    while ((INIline = sClientINI.ReadLine()) != null)
+                    {
+                        StartLogLine++;
+                        INIline = INIline.Trim();
+                        if (INIline.Length == 0) continue;
+                        if (INIline.StartsWith("#")) continue;
+                        ClientconfigLine.Add(new ConfigLine(INIline));
+
+                        if (ClientconfigLine.Last().Command == ConfigLineCommand.STARTER) 
+                        {
+                            ClientconfigLine.Last().Version= Assembly.GetExecutingAssembly().GetName().Version.ToString(); 
+                            needUpdate = false;
+                        }
+                        else if (ClientconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)
+                        {
+                            this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Ошибка! Нераспознанная команда: " + INIline + Environment.NewLine);
+                            ClientconfigLine.Remove(ClientconfigLine.Last());
+                        }
+                    }
+                    sClientINI.Close();
+                }
+                if (needUpdate)
+                {
+                    ClientconfigLine.Add(DateTime.Now.ToString("ddMMyyyy-HHmmss")+"\tSTARTER\t" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                }
+
+                string INIline = "";
+                foreach (ConfigLine l in ClientconfigLine) INIline += l.Date + "\t" + l.Command + "\t" + l.Version + "\t" + l.File//+"\t"+l.Parameters.ToString()
+                                                                                                                            + Environment.NewLine;
+#if DEBUG
+                this.textBox_Console.BeginInvoke(delegateConsoleWrite, INIline);
+#endif
+                using (StreamWriter swClientINI = new StreamWriter(iniFile, false))
+                    swClientINI.Write(INIline);
                 
-
-
+#if DEBUG
+                return;
+#else
                 Process.Start(workFolder + RunMODTitle + ".exe");
+#endif
                 Environment.Exit(0);
             }
             else 
