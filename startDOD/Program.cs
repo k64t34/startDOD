@@ -77,7 +77,7 @@ namespace startDOD
                     this.File = Part[3 - this.Type];
                     this.Version = Part[2 - this.Type];
                 }
-                else if (String.Compare(Part[1 - this.Type], "STARTER", true) == 0)
+                else if (String.Compare(Part[1 - this.Type], "STARTER", true) == 0 && this.Type==1)
                 {
                     MinParameterCount = 3 - this.Type;
                     if (Part.Length < MinParameterCount) return;

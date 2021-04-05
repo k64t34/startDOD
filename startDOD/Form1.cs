@@ -105,53 +105,9 @@ namespace startDOD
                 }
                 catch (Exception e1) { textBox_Console.AppendText("Не удалось остановить процесс " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }
                 try { File.Copy(UpdateFile, workFolder + RunMODTitle + ".exe",true); }
-                catch (Exception e1) { textBox_Console.AppendText("Не удалось удалить старую версию " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }                
-                string iniFile = workFolder + RunMODTitle + ".log";
-                if (!File.Exists(iniFile)) { this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Файл конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine); Environment.Exit(0); }
-                bool needUpdate = true;
-                List<ConfigLine> ClientconfigLine = new List<ConfigLine>();
-                using (StreamReader sClientINI = new StreamReader(iniFile))
-                {                    
-                    string INIline;
-                    int StartLogLine = 0;                    
-                    while ((INIline = sClientINI.ReadLine()) != null)
-                    {
-                        StartLogLine++;
-                        INIline = INIline.Trim();
-                        if (INIline.Length == 0) continue;
-                        if (INIline.StartsWith("#")) continue;
-                        ClientconfigLine.Add(new ConfigLine(INIline));
-
-                        if (ClientconfigLine.Last().Command == ConfigLineCommand.STARTER) 
-                        {
-                            ClientconfigLine.Last().Version= Assembly.GetExecutingAssembly().GetName().Version.ToString(); 
-                            needUpdate = false;
-                        }
-                        else if (ClientconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)
-                        {
-                            this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Ошибка! Нераспознанная команда: " + INIline + Environment.NewLine);
-                            ClientconfigLine.Remove(ClientconfigLine.Last());
-                        }
-                    }
-                    sClientINI.Close();
-                }
-                if (needUpdate)
-                {
-                    ClientconfigLine.Add(DateTime.Now.ToString("ddMMyyyy-HHmmss")+"\tSTARTER\t" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
-                }
-
-                string INIline = "";
-                foreach (ConfigLine l in ClientconfigLine) INIline += l.Date + "\t" + l.Command + "\t" + l.Version + "\t" + l.File//+"\t"+l.Parameters.ToString()
-                                                                                                                            + Environment.NewLine;
-#if DEBUG
-                this.textBox_Console.BeginInvoke(delegateConsoleWrite, INIline);
-#endif
-                using (StreamWriter swClientINI = new StreamWriter(iniFile, false))
-                    swClientINI.Write(INIline);
-                
-#if DEBUG
-                return;
-#else
+                catch (Exception e1) { textBox_Console.AppendText("Не удалось удалить старую версию " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }                                               
+#if !DEBUG
+ 
                 Process.Start(workFolder + RunMODTitle + ".exe");
 #endif
                 Environment.Exit(0);
@@ -228,9 +184,7 @@ namespace startDOD
                 using (StreamReader sServerINI = new StreamReader(updateFile))
                 {
                     List<ConfigLine> ServerconfigLine = new List<ConfigLine>();
-                    string UPDATEline;
-                    //string[] UpdateLineWords;
-                    //string[] INILineWords;
+                    string UPDATEline;                    
                     //TODO:Если на сервере изменилась ссылка на папку, то необходимо заново перечитать новую папку
                     while ((UPDATEline = sServerINI.ReadLine()) != null)
                     {
@@ -245,9 +199,16 @@ namespace startDOD
                                 ServerconfigLine.Remove(ServerconfigLine.Last());
                                 continue;
                             }
-//#if DEBUG
-//                            this.textBox_Console.BeginInvoke(delegateConsoleWrite, UPDATEline + Environment.NewLine);
-//#endif
+                            //#if DEBUG
+                            //                            this.textBox_Console.BeginInvoke(delegateConsoleWrite, UPDATEline + Environment.NewLine);
+                            //#endif
+                            if (ServerconfigLine.Last().Command == ConfigLineCommand.STARTER)
+                                if (String.Compare(Assembly.GetExecutingAssembly().GetName().Version.ToString(), ServerconfigLine.Last().Version, true) == 0)
+                                {
+                                    this.textBox_Console.BeginInvoke(delegateConsoleWrite, RunMODTitle + " последняя версия "+ ServerconfigLine.Last().Version + Environment.NewLine);
+                                    continue;
+                                }
+                                else if (!GetNewStarter()) continue;
                             this.textBox_Console.BeginInvoke(delegateConsoleWrite, ServerconfigLine.Last().File);                            
                             int ClientLineIndex = ClientconfigLine.FindIndex(clcfg => clcfg.File.Equals(ServerconfigLine.Last().File));
                             needUpdate = true;
@@ -261,9 +222,8 @@ namespace startDOD
                             else
                             {
                                 this.textBox_Console.BeginInvoke(delegateConsoleWrite, " update to " + ServerconfigLine.Last().Version + Environment.NewLine);
-                                if (ServerconfigLine.Last().Command == ConfigLineCommand.UNZIP) needUpdate = UNZIP(ServerconfigLine.Last().File);
-                                else if (ServerconfigLine.Last().Command == ConfigLineCommand.REG) needUpdate = REGimport(ServerconfigLine.Last().File);
-                                else if (ServerconfigLine.Last().Command == ConfigLineCommand.STARTER) needUpdate = GetNewStarter();
+                                if (ServerconfigLine.Last().Command == ConfigLineCommand.UNZIP)     needUpdate = UNZIP(ServerconfigLine.Last().File);
+                                else if (ServerconfigLine.Last().Command == ConfigLineCommand.REG)  needUpdate = REGimport(ServerconfigLine.Last().File);                                
                                 else needUpdate = false;
                                 if (needUpdate)
                                 {
@@ -380,7 +340,9 @@ namespace startDOD
         }
         private bool UNZIP(string Source)
         {
+
             bool result = false;
+            //TODO:Use local winrar
             //UNZIPer = Environment.GetEnvironmentVariable("ProgramFiles") + "\\WinRAR\\Rar.exe";
             //    if (!File.Exists(UNZIPer))
             //    {
@@ -415,6 +377,7 @@ namespace startDOD
         bool GetNewStarter()
         {
             bool result = false;
+            this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Обновление стартера... ");
             try 
             {
                 File.Copy(updateFolder+ RunMODTitle+".exe", workFolder+RunMODTitle + ".update.exe",true);
