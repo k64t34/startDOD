@@ -45,6 +45,7 @@ namespace startDOD
         private void ConsoleWrite(string text){this.textBox_Console.AppendText(text);}
         private void Form1_Load(object sender, EventArgs e)
         {
+            //TOD:Моргание при старте
             label_CE.Text += " " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
             #region Tune form control
             panel_Console.Width = this.Width - panel_Console.Left - panel_Console.Margin.All;
@@ -64,30 +65,60 @@ namespace startDOD
             #endregion
             #region Is old update file still exist  
             string RunningProcess = Path.GetFileNameWithoutExtension(System.Environment.GetCommandLineArgs()[0]);
-            string UpdateFile = RunMODTitle + ".update.exe";
+            #if DEBUG
+            textBox_Console.AppendText("Запущенный процесс " + RunningProcess + Environment.NewLine);
+            #endif            
+            string UpdateProcess = RunMODTitle + ".update";
+            string UpdateFile = workFolder + UpdateProcess + ".exe";
             if (String.Compare(RunMODTitle, RunningProcess, true) == 0)
             {                
                 if (File.Exists(UpdateFile))
                 {
-                    ;
+                    try
+                    {
+                        Process[] updateProcesses = Process.GetProcessesByName(UpdateProcess);
+                        if (updateProcesses.Length > 0)
+                        {
+                            for (int i = updateProcesses.Length - 1; i >= 0; i--){ updateProcesses[i].Kill(); }
+                            Thread.Sleep(3000);
+                            updateProcesses = Process.GetProcessesByName(UpdateProcess);
+                            if (updateProcesses.Length > 0) throw new Exception("Process is still running");
+                        }                        
+                    }
+                    catch (Exception e1) { textBox_Console.AppendText("Не удалось остановить процесс " + UpdateProcess + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }                   
+                    try { File.Delete(UpdateFile); }
+                    catch(Exception e1) { textBox_Console.AppendText("Не удалось удалить файл обновлений " + UpdateFile  + Environment.NewLine +e1.Message+Environment.NewLine); Environment.Exit(0);  }
                 }
             }
-            else if (String.Compare(UpdateFile, RunningProcess, true) == 0)
-            {
+            else if (String.Compare(UpdateProcess, RunningProcess, true) == 0)
+            {                
+                try
+                {
+                    Process[] updateProcesses = Process.GetProcessesByName(RunMODTitle);
+                    if (updateProcesses.Length > 0)
+                    {
+                        for (int i = updateProcesses.Length - 1; i >= 0; i--) { updateProcesses[i].Kill(); }
+                        Thread.Sleep(3000);
+                        updateProcesses = Process.GetProcessesByName(RunMODTitle);
+                        if (updateProcesses.Length > 0) throw new Exception("Process is still running");
+                    }
+                }
+                catch (Exception e1) { textBox_Console.AppendText("Не удалось остановить процесс " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }
+                try { File.Copy(UpdateFile, workFolder + RunMODTitle + ".exe",true); }
+                catch (Exception e1) { textBox_Console.AppendText("Не удалось удалить файл обновлений " + UpdateFile + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }
+                //TODO:Обновить запись в *.log 1234-5678 STARTER version
+                
+
+
+                Process.Start(workFolder + RunMODTitle + ".exe");
+                Environment.Exit(0);
             }
             else 
             {
-                textBox_Console.AppendText("Запущенный процесс " + RunningProcess + ".exe нераспознан" + Environment.NewLine);
+                textBox_Console.AppendText("Запущенный процесс " + RunningProcess + ".exe не распознан" + Environment.NewLine);
                 textBox_Console.AppendText("Попробуйте перезапустить " + RunningProcess + Environment.NewLine);
                 return;
-            }
-
-
-
-            if (Process.GetProcessesByName(UpdateFile).Length > 0)
-                {
-                    ;// Is running
-                }
+            }            
             #endregion
             _syncContext = SynchronizationContext.Current;
             textBox_Console.AppendText("Рабочая папка " + workFolder + Environment.NewLine);
