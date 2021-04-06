@@ -30,10 +30,11 @@ namespace startDOD
         //const string _CR = "\r";
         //const string _CRLF = "\r\n";
         //const string _TAB = "\t";
-        string workFolder = AppDomain.CurrentDomain.BaseDirectory;
+        string workFolder = AppDomain.CurrentDomain.BaseDirectory;        
         string updateFolder;
         const string RunMOD = "dod";
         const string RunMODTitle="День победы";
+        string logFile;
         String FileStarterVersion;
         const string revLoader = "revLoader.exe";
         string ProgUNZIP = "UnRAR.exe";
@@ -47,6 +48,7 @@ namespace startDOD
         private void Form1_Load(object sender, EventArgs e)
         {
             //TOD:Моргание при старте
+            logFile = workFolder + RunMODTitle + ".log";
             FileStarterVersion = exeFileVersion(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);             
             label_CE.Text += " " + FileStarterVersion;
             #region Tune form control
@@ -62,17 +64,17 @@ namespace startDOD
             label_Console_cmd.BackColor = Color.FromArgb(100, 48, 48, 48);
             panel_Console.Visible = true;
             #endregion
+            delegateConsoleWrite = new DelegateConsoleWrite(ConsoleWrite);
             #region 
             //TODO:Is copy of this programm running
 
-            textBox_Console.AppendText("Версия файла " + FileStarterVersion + Environment.NewLine);
-            textBox_Console.AppendText("Рабочая папка " + workFolder + Environment.NewLine);
-
+            WriteLineLog("Версия файла " + FileStarterVersion);//            textBox_Console.AppendText("Версия файла " + FileStarterVersion + Environment.NewLine);
+            WriteLineLog("Рабочая папка " + workFolder);// textBox_Console.AppendText("Рабочая папка " + workFolder + Environment.NewLine);
             #endregion
             #region Is old update file still exist  
             string RunningProcess = Path.GetFileNameWithoutExtension(System.Environment.GetCommandLineArgs()[0]);
-            #if DEBUG
-            textBox_Console.AppendText("Запущенный процесс " + RunningProcess + Environment.NewLine);
+#if DEBUG
+            WriteLineLog("Запущенный процесс " + RunningProcess);//            textBox_Console.AppendText("Запущенный процесс " + RunningProcess + Environment.NewLine);
             #endif            
             string UpdateProcess = RunMODTitle + ".update";
             string UpdateFile = workFolder + UpdateProcess + ".exe";
@@ -80,6 +82,7 @@ namespace startDOD
             {                
                 if (File.Exists(UpdateFile))
                 {
+                    WriteLineLog("Найден файл "+UpdateFile);
                     try
                     {
                         Process[] updateProcesses = Process.GetProcessesByName(UpdateProcess);
@@ -91,9 +94,14 @@ namespace startDOD
                             if (updateProcesses.Length > 0) throw new Exception("Process is still running");
                         }                        
                     }
-                    catch (Exception e1) { textBox_Console.AppendText("Не удалось остановить процесс " + UpdateProcess + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }                   
-                    try { File.Delete(UpdateFile); }
-                    catch(Exception e1) { textBox_Console.AppendText("Не удалось удалить файл обновлений " + UpdateFile  + Environment.NewLine +e1.Message+Environment.NewLine); Environment.Exit(0);  }
+                    catch (Exception e1) { WriteLineLog("Не удалось остановить процесс " + UpdateProcess + " "+ e1.Message);// textBox_Console.AppendText("Не удалось остановить процесс " + UpdateProcess + Environment.NewLine + e1.Message + Environment.NewLine);
+                                                           Environment.Exit(0);                                                           }                   
+                    try {
+                        File.Delete(UpdateFile);
+                        WriteLineLog("Удаление временного файла " + UpdateFile+" прошло успешно");
+                    }
+                    catch(Exception e1) { WriteLineLog("Не удалось удалить файл обновлений " + UpdateFile + " " + e1.Message );// textBox_Console.AppendText("Не удалось удалить файл обновлений " + UpdateFile  + Environment.NewLine +e1.Message+Environment.NewLine);
+                                                          Environment.Exit(0);  }
                 }
             }
             else if (String.Compare(UpdateProcess, RunningProcess, true) == 0) //Rurning *.update.exe
@@ -103,32 +111,38 @@ namespace startDOD
                 {
                     if (File.Exists(exeFileName))
                     {
+                        WriteLineLog("Найден файл "+ exeFileName);
                         string oldexeFileNameVersion = exeFileVersion(RunMODTitle);
-                        if (String.Compare(oldexeFileNameVersion, FileStarterVersion, true) == 0) Environment.Exit(0);
+                        if (String.Compare(oldexeFileNameVersion, FileStarterVersion, true) == 0) { WriteLineLog("Версии файлов " + exeFileName+" и "+ UpdateFile+" одинаковые. Версия файлов "+oldexeFileNameVersion+". Обновление не требуется");Thread.Sleep(3000); Environment.Exit(0); }
+                        WriteLineLog("Версии файлов " + exeFileName + " и " + UpdateFile + " разные. Требуется обновление");
                         
-                            Process[] exeProcesses = Process.GetProcessesByName(UpdateProcess);
-                            if (exeProcesses.Length > 0)
-                            {
-                                for (int i = exeProcesses.Length - 1; i >= 0; i--) { exeProcesses[i].Kill(); }
-                                Thread.Sleep(3000);
-                                exeProcesses = Process.GetProcessesByName(RunMODTitle);
-                                if (exeProcesses.Length > 0) throw new Exception("Process is still running");
-                            }
-                        
+                        Process[] exeProcesses = Process.GetProcessesByName(RunMODTitle);
+                        if (exeProcesses.Length > 0)
+                        {
+                            WriteLineLog("Завершение процесса "+ RunMODTitle);
+                            for (int i = exeProcesses.Length - 1; i >= 0; i--) { exeProcesses[i].Kill(); }
+                            Thread.Sleep(3000);
+                            exeProcesses = Process.GetProcessesByName(RunMODTitle);
+                            if (exeProcesses.Length > 0) throw new Exception("Process is still running");
+                        }                        
                     }
                 }
-                catch (Exception e1) { textBox_Console.AppendText("Не удалось остановить процесс " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }
-                try { File.Copy(UpdateFile, exeFileName, true); }
-                catch (Exception e1) { textBox_Console.AppendText("Не удалось удалить старую версию " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine); Environment.Exit(0); }
-#if !DEBUG
- 
+                catch (Exception e1) { WriteLineLog("Не удалось остановить процесс " + RunMODTitle + " " + e1.Message);// textBox_Console.AppendText("Не удалось остановить процесс " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine);
+                    Thread.Sleep(3000); Environment.Exit(0); }
+                try 
+                {
+                    File.Copy(UpdateFile, exeFileName, true);
+                    WriteLineLog("Замена файла завершена успешно");
+                }
+                catch (Exception e1) { WriteLineLog("Не удалось удалить старую версию " + RunMODTitle + " "+  e1.Message);// textBox_Console.AppendText("Не удалось удалить старую версию " + RunMODTitle + Environment.NewLine + e1.Message + Environment.NewLine);
+                    Thread.Sleep(3000); Environment.Exit(0); }
+                WriteLineLog("Запуск новой версии"); 
                 Process.Start(exeFileName);
-#endif
                 Environment.Exit(0);
             }
             else 
             {
-                textBox_Console.AppendText("Запущенный процесс " + RunningProcess + ".exe не распознан" + Environment.NewLine);
+                WriteLineLog("Запущенный процесс " + RunningProcess + ".exe не распознан");// textBox_Console.AppendText("Запущенный процесс " + RunningProcess + ".exe не распознан" + Environment.NewLine);
                 textBox_Console.AppendText("Попробуйте перезапустить " + RunningProcess + Environment.NewLine);
                 return;
             }            
@@ -137,7 +151,7 @@ namespace startDOD
             
 
             #region https://www.youtube.com/watch?v=9AIApJmbulY&t=196s
-            delegateConsoleWrite = new DelegateConsoleWrite(ConsoleWrite);
+            
             threadStartReadConfig = new ThreadStart(readConfig);
             threadReadConfig = new Thread(threadStartReadConfig);
             threadReadConfig.Start();            
@@ -145,13 +159,13 @@ namespace startDOD
         }                
         void readConfig()
         {
-            string iniFile = workFolder + RunMODTitle + ".log";//	iniFile = workFolder + iniFile;
+            string iniFile = workFolder + RunMODTitle + ".dat";//	iniFile = workFolder + iniFile;
             if (!File.Exists(iniFile)) 
             {
-                this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Файл конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine);
+                WriteLineLog("Файл конфигурации " + iniFile + " не найден. Обновление невозможно.");//                this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Файл конфигурации " + iniFile + " не найден. Обновление невозможно." + Environment.NewLine);
                 return;
-            }            
-            this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Чтение файла конфигурации " + iniFile + Environment.NewLine);
+            }
+            WriteLineLog("Чтение файла конфигурации " + iniFile );// this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Чтение файла конфигурации " + iniFile + Environment.NewLine);
             using (StreamReader sClientINI = new StreamReader(iniFile))
             {
                 bool needUpdate = true;
@@ -170,7 +184,7 @@ namespace startDOD
                     if (ClientconfigLine.Last().Command == ConfigLineCommand.FolderSourceUpdate) { updateFolder = ClientconfigLine.Last().File; }
                     else if (ClientconfigLine.Last().Command == ConfigLineCommand.UNKNOWN)
                     {
-                    this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Ошибка! Нераспознанная команда: " + INIline + Environment.NewLine);
+                        WriteLineLog("Ошибка! Нераспознанная команда: " + INIline);// this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Ошибка! Нераспознанная команда: " + INIline + Environment.NewLine);
                         ClientconfigLine.Remove(ClientconfigLine.Last());
                     }
                 }
@@ -187,7 +201,7 @@ namespace startDOD
                     return;
                 }
                 #region Check for update STARTER
-                this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Папка обновлений " + updateFolder + Environment.NewLine);
+                WriteLineLog("Папка обновлений " + updateFolder);//this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Папка обновлений " + updateFolder + Environment.NewLine);
                 try
                 {
                     string newFileStarter = updateFolder + RunMODTitle + ".exe";
@@ -197,8 +211,10 @@ namespace startDOD
                         String newFileStarterVersion = exeFileVersion(newFileStarter);
                         if (String.Compare(newFileStarterVersion, FileStarterVersion, true) != 0)
                         {
-                            this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Обновление стартера версии " + FileStarterVersion + " до версии " + newFileStarterVersion);
-                            File.Copy(newFileStarter, workFolder + RunMODTitle + ".update.exe", true);                            
+                            WriteLineLog("Обновление стартера версии " + FileStarterVersion + " до версии " + newFileStarterVersion);// this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Обновление стартера версии " + FileStarterVersion + " до версии " + newFileStarterVersion);
+                            //TODO:Try
+                            File.Copy(newFileStarter, workFolder + RunMODTitle + ".update.exe", true);
+                            WriteLineLog("Скопирована новая версия стартера. Запуск .update.exe");// this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Обновление стартера версии " + FileStarterVersion + " до версии " + newFileStarterVersion);
                             Process.Start(workFolder + RunMODTitle + ".update.exe");
                             //Application.Exit();
                             //Process.GetCurrentProcess().Kill();
@@ -216,8 +232,8 @@ namespace startDOD
                 {
                     this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Файл обновлений не найден " + updateFile + Environment.NewLine);
                     return;
-                }                
-                this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Чтение файла обновлений " + updateFile + Environment.NewLine);
+                }
+                WriteLineLog("Чтение файла обновлений " + updateFile );//                this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Чтение файла обновлений " + updateFile + Environment.NewLine);
                 using (StreamReader sServerINI = new StreamReader(updateFile))
                 {
                     List<ConfigLine> ServerconfigLine = new List<ConfigLine>();
@@ -239,19 +255,20 @@ namespace startDOD
                             //#if DEBUG
                             //                            this.textBox_Console.BeginInvoke(delegateConsoleWrite, UPDATEline + Environment.NewLine);
                             //#endif
-                            this.textBox_Console.BeginInvoke(delegateConsoleWrite, ServerconfigLine.Last().File);                            
+                            WriteBeginLineLog(ServerconfigLine.Last().File);//                            this.textBox_Console.BeginInvoke(delegateConsoleWrite, ServerconfigLine.Last().File); 
                             int ClientLineIndex = ClientconfigLine.FindIndex(clcfg => clcfg.File.Equals(ServerconfigLine.Last().File));
                             needUpdate = true;
                             if (ClientLineIndex != -1)
                             {
-                                this.textBox_Console.BeginInvoke(delegateConsoleWrite, " "+ClientconfigLine[ClientLineIndex].Version);                                
+                                WriteLog(" " + ClientconfigLine[ClientLineIndex].Version);//                                this.textBox_Console.BeginInvoke(delegateConsoleWrite, " "+ClientconfigLine[ClientLineIndex].Version);                                
                                 if (String.Compare(ClientconfigLine[ClientLineIndex].Version,ServerconfigLine.Last().Version, true) == 0)
                                     needUpdate = false;
                             }
-                            if (!needUpdate) { this.textBox_Console.BeginInvoke(delegateConsoleWrite, " = " + ServerconfigLine.Last().Version + Environment.NewLine); }
+                            if (!needUpdate) { WriteLog(" = " + ServerconfigLine.Last().Version + Environment.NewLine);// this.textBox_Console.BeginInvoke(delegateConsoleWrite, " = " + ServerconfigLine.Last().Version + Environment.NewLine);
+                                                           }
                             else
                             {
-                                this.textBox_Console.BeginInvoke(delegateConsoleWrite, " update to " + ServerconfigLine.Last().Version + Environment.NewLine);
+                                WriteLog(" update to " + ServerconfigLine.Last().Version + Environment.NewLine);// this.textBox_Console.BeginInvoke(delegateConsoleWrite, " update to " + ServerconfigLine.Last().Version + Environment.NewLine);
                                 if (ServerconfigLine.Last().Command == ConfigLineCommand.UNZIP)     needUpdate = UNZIP(ServerconfigLine.Last().File);
                                 else if (ServerconfigLine.Last().Command == ConfigLineCommand.REG)  needUpdate = REGimport(ServerconfigLine.Last().File);                                
                                 else needUpdate = false;
@@ -291,7 +308,7 @@ namespace startDOD
                     }
                 }
             }
-            this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Запуск " + RunMOD + Environment.NewLine);
+            WriteLineLog("Запуск " + RunMOD + Environment.NewLine);//            this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Запуск " + RunMOD + Environment.NewLine);
 #if !DEBUG
             LoadRevEmu();
             System.Threading.Thread.Sleep(5000);
@@ -403,6 +420,26 @@ namespace startDOD
             catch { }
             return result;
         }
+        void WriteLog(string Text) 
+        {
+        this.textBox_Console.BeginInvoke(delegateConsoleWrite, Text);
+        try
+        {
+            File.AppendAllText(logFile, Text);
+        }
+        catch { }
+        }
+        void WriteLineLog(string Text)
+        {
+            this.textBox_Console.BeginInvoke(delegateConsoleWrite, Text + Environment.NewLine);
+            File.AppendAllText(logFile,DateTime.Now.ToString("dd.MM.yyyy-HH:mm:ss") + " " + Text + Environment.NewLine);
+        }
+        void WriteBeginLineLog(string Text)
+        {
+            this.textBox_Console.BeginInvoke(delegateConsoleWrite, Text);
+            File.AppendAllText(logFile, DateTime.Now.ToString("dd.MM.yyyy-HH:mm:ss") + " " + Text );
+        }
+
     }
 }
     

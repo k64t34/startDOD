@@ -73,17 +73,26 @@ namespace InstallDOD
 			DriveInfo[] allDrives = DriveInfo.GetDrives();//https://docs.microsoft.com/ru-ru/dotnet/api/system.io.driveinfo.getdrives?view=netframework-4.7.2
 			foreach (DriveInfo d in allDrives)
 			{
-				if (d.DriveType==DriveType.Fixed || d.DriveType==DriveType.Removable )
-				comboBox_Disks.Items.Add(d.Name);
+				if (d.DriveType==DriveType.Fixed || d.DriveType==DriveType.Removable )				
+					comboBox_Disks.Items.Add(d.Name+" "+d.VolumeLabel+"("+ d.DriveFormat+") "+ HumanFormatByte(d.TotalFreeSpace)+" Байт свободно из "+ HumanFormatByte(d.TotalSize));
+				//TODO:Human format disk size Т,Г,М,К,Байт
 			}			
 			comboBox_Disks.SelectedIndex=0;            
             System.Threading.Thread.Sleep(1000);
             panel_Folder.Visible = true;
-
         }
+		String HumanFormatByte(long Bytes) 
+		{
+			string result;
+			//if (Byte >= 1024) 
+			result = String.Format("{0:N0}",Bytes);
+
+			return result;
+		}
 		void ComboBox_DisksSelectedIndexChanged(object sender, EventArgs e)
 		{
-			textBox_TargetFolder.Text=comboBox_Disks.Items[comboBox_Disks.SelectedIndex].ToString();
+			string DiskString = comboBox_Disks.Items[comboBox_Disks.SelectedIndex].ToString();
+			textBox_TargetFolder.Text= DiskString.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)[0];			
 			listBox_FoldersDirectoryInfo();			
 		}
 		void listBox_FoldersDirectoryInfo()
