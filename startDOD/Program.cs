@@ -30,8 +30,8 @@ namespace startDOD
         FolderSourceUpdate = 1,
         UNZIP = 2,
         REG = 3,
-        EDIT_CLIENT_FILE = 4,
-        STARTER = 5
+        EDIT_CLIENT_FILE = 4//,
+        //STARTER = 5
     }
 
 

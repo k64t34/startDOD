@@ -34,6 +34,7 @@ namespace startDOD
         string updateFolder;
         const string RunMOD = "dod";
         const string RunMODTitle="День победы";
+        String FileStarterVersion;
         const string revLoader = "revLoader.exe";
         string ProgUNZIP = "UnRAR.exe";
         char[] separatingChars = { ' ', '\t' };
@@ -46,7 +47,8 @@ namespace startDOD
         private void Form1_Load(object sender, EventArgs e)
         {
             //TOD:Моргание при старте
-            label_CE.Text += " " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            FileStarterVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            label_CE.Text += " " + FileStarterVersion;
             #region Tune form control
             panel_Console.Width = this.Width - panel_Console.Left - panel_Console.Margin.All;
             panel_Console.Height = this.Height - panel_Console.Top - panel_Console.Margin.All - panel_Console.Margin.All;
@@ -62,6 +64,13 @@ namespace startDOD
             #endregion
             #region 
             //TODO:Is copy of this programm running
+
+            FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(@"c:\Users\skorik\source\repos\startDOD\FolderSourceUpdate\update\День Победы.exe");
+
+            textBox_Console.AppendText("Версия файла " + myFileVersionInfo.FileVersion + Environment.NewLine);
+            return;
+
+
             #endregion
             #region Is old update file still exist  
             string RunningProcess = Path.GetFileNameWithoutExtension(System.Environment.GetCommandLineArgs()[0]);
@@ -172,7 +181,31 @@ namespace startDOD
                     this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Указанная папка обновлений не найдена " + updateFolder + Environment.NewLine);
                     return;
                 }
-               
+                #region Check for update STARTER
+                try
+                {
+                    string newFileStarter = updateFolder + RunMODTitle + ".exe";
+
+                    if (File.Exists(newFileStarter))
+                    {
+                        String newFileStarterVersion = FileVersionInfo.GetVersionInfo(newFileStarter).FileVersion;
+                        if (String.Compare(FileVersionInfo.GetVersionInfo(newFileStarter).FileVersion, FileStarterVersion, true) != 0)
+                        {
+                            this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Обновление стартера версии " + FileStarterVersion + " до версии " + newFileStarterVersion);
+                            File.Copy(newFileStarter, workFolder + RunMODTitle + ".update.exe", true);                            
+                            Process.Start(workFolder + RunMODTitle + ".update.exe");
+                            //Application.Exit();
+                            //Process.GetCurrentProcess().Kill();
+                            Environment.Exit(0);
+                            //System.Environment.Exit(0);
+                        }
+                    }
+
+                }
+                catch (Exception e) { }
+                #endregion
+
+
                 this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Папка обновлений " + updateFolder + Environment.NewLine);
                 string updateFile = updateFolder + "update.ini";
                 if (!File.Exists(updateFile))
