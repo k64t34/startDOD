@@ -151,8 +151,13 @@ namespace InstallDOD
         // Button_folder_OKClick
         void Button_folder_OKClick(object sender, EventArgs e)
 		{
-            string strFile = textBox_TargetFolder.Text + Mod + ".log";
-            
+			string strFile = textBox_TargetFolder.Text + Mod + ".log";			
+			try {
+				System.IO.File.WriteAllText(strFile, DateTime.Now.ToString("dd.MM.yyyy-hh:mm:ss")+" Install "+ Mod +" version "+ Assembly.GetExecutingAssembly().GetName().Version.ToString() +Environment.NewLine);
+			}
+			catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при создании журнала\n", MessageBoxButtons.OK, MessageBoxIcon.Error); };
+
+			strFile = textBox_TargetFolder.Text + Mod + ".dat";            
             try
             {
                 //Create log file
