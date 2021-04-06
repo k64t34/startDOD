@@ -76,15 +76,7 @@ namespace startDOD
                     this.Command = ConfigLineCommand.REG;
                     this.File = Part[3 - this.Type];
                     this.Version = Part[2 - this.Type];
-                }
-                else if (String.Compare(Part[1 - this.Type], "STARTER", true) == 0 && this.Type==1)
-                {
-                    MinParameterCount = 3 - this.Type;
-                    if (Part.Length < MinParameterCount) return;
-                    this.Command = ConfigLineCommand.STARTER;                    
-                    this.Version = Part[2 - this.Type];
-                    this.File = Path.GetFileName(System.Environment.GetCommandLineArgs()[0]);
-                }
+                }                
                 //else if (String.Compare(Part[1 - this.Type], "EDIT_CLIENT_FILE", true) == 0) this.Command = ConfigLineCommand.EDIT_CLIENT_FILE;
                 else { return; }
 
