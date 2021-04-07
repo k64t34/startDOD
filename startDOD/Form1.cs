@@ -325,7 +325,7 @@ namespace startDOD
             return (result);
         }
         private void SYNC(string cmdFolder)        {                       textBox_Console.AppendText("Синхронизация" + cmdFolder + Environment.NewLine);        }
-        private int RUN(string FileName, string Arguments)
+        private int RUN(string FileName, string Arguments)// TODO:Записывать все ошибки в журнал
         {
 #if DEBUG
             this.textBox_Console.BeginInvoke(delegateConsoleWrite, FileName + " "+ Arguments + Environment.NewLine);

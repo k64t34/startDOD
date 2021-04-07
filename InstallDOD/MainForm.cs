@@ -1,19 +1,11 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Andrew
- * Date: 07.01.2019
- * Time: 13:28
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
-using System;
+﻿using System;
 //using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 //using System.Runtime.InteropServices;
-using IWshRuntimeLibrary;
+using IWshRuntimeLibrary; //TODO:Избавиться от использования Dll из WSH для создания ярлыка http://csharpcoding.org/sozdanie-yarlyka/#more-192
 using System.Reflection;
 using System.Security.Permissions;
 
@@ -77,8 +69,10 @@ namespace InstallDOD
 					comboBox_Disks.Items.Add(d.Name+" "+d.VolumeLabel+"("+ d.DriveFormat+") "+ HumanFormatByte(d.TotalFreeSpace)+" Байт свободно из "+ HumanFormatByte(d.TotalSize));
 				//TODO:Human format disk size Т,Г,М,К,Байт
 			}			
-			comboBox_Disks.SelectedIndex=0;            
-            System.Threading.Thread.Sleep(1000);
+			
+			//comboBox_Disks.SelectedIndex=0;
+			comboBox_Disks.SelectedIndex = comboBox_Disks.Items.Count-1;
+			//System.Threading.Thread.Sleep(1000);
             panel_Folder.Visible = true;
         }
 		String HumanFormatByte(long Bytes) 
@@ -86,7 +80,6 @@ namespace InstallDOD
 			string result;
 			//if (Byte >= 1024) 
 			result = String.Format("{0:N0}",Bytes);
-
 			return result;
 		}
 		void ComboBox_DisksSelectedIndexChanged(object sender, EventArgs e)
@@ -160,6 +153,8 @@ namespace InstallDOD
         // Button_folder_OKClick
         void Button_folder_OKClick(object sender, EventArgs e)
 		{
+			panel_Folder.Enabled = false;
+			panel_Folder.Visible = false;
 			string strFile = textBox_TargetFolder.Text + Mod + ".log";			
 			try {
 				System.IO.File.WriteAllText(strFile, DateTime.Now.ToString("dd.MM.yyyy-hh:mm:ss")+" Install "+ Mod +" version "+ Assembly.GetExecutingAssembly().GetName().Version.ToString() +Environment.NewLine);
@@ -213,7 +208,6 @@ namespace InstallDOD
             catch (Exception ex) { MessageBox.Show(ex.Message.ToString(), "Ошибка при подготовке конфигурации стартера", MessageBoxButtons.OK, MessageBoxIcon.Error); }            
             this.Close();
 		}
-
         
     }
 }
