@@ -125,7 +125,7 @@ namespace InstallDOD
 			newFolder form_newFolder = new newFolder();			
 			if (form_newFolder.ShowDialog(this) == DialogResult.OK)
 			{
-				string newFolder = textBox_TargetFolder.Text + form_newFolder.StrNewFolder;
+				string newFolder = textBox_TargetFolder.Text + form_newFolder.StrNewFolder.Trim();
 				form_newFolder.Dispose();				
 				if(!Directory.Exists(newFolder)) 
 				{
@@ -143,7 +143,7 @@ namespace InstallDOD
 				}
 				if(Directory.Exists(newFolder))
 				{
-					textBox_TargetFolder.Text=newFolder;
+					textBox_TargetFolder.Text=newFolder+"\\";
 					listBox_FoldersDirectoryInfo();
 				}
 			}
