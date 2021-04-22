@@ -122,7 +122,7 @@ namespace InstallDOD
 		}
 		void Button_newFolderClick(object sender, EventArgs e)
 		{
-			newFolder form_newFolder = new newFolder();			
+			newFolder form_newFolder = new newFolder();
 			if (form_newFolder.ShowDialog(this) == DialogResult.OK)
 			{
 				string newFolder = textBox_TargetFolder.Text + form_newFolder.StrNewFolder.Trim();

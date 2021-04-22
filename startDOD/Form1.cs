@@ -424,7 +424,7 @@ namespace startDOD
             this.textBox_Console.BeginInvoke(delegateConsoleWrite, "Begin unzip file "+ Source+" to "+ workFolder+ Environment.NewLine);
 #endif
             this.textBox_Console.BeginInvoke(delegateConsoleWrite,"Распаковка " + Source+".");            
-            int RUN_return = RUN(updateFolder+ProgUNZIP, "x -y -o+ -sca -ri15:10 -idcd  \"" + updateFolder+Source + "\" \"" + workFolder + "\"");
+            int RUN_return = RUN(updateFolder+ProgUNZIP, "x -y -o+ -sca -ri15:1 -idcd \"" + updateFolder+Source + "\" \"" + workFolder + "\"");
             if (RUN_return == 0) { result = true; this.textBox_Console.BeginInvoke(delegateConsoleWrite, "OK" + Environment.NewLine); }
             else if (RUN_return == -1) { this.textBox_Console.BeginInvoke(delegateConsoleWrite, " Ошибка при запуске распаковщика" + Environment.NewLine); }
             else if (RUN_return > 0) this.textBox_Console.BeginInvoke(delegateConsoleWrite, " Распаковщик завершил работу с кодом " + RUN_return + Environment.NewLine);
